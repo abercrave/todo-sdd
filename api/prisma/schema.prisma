@@ -17,5 +17,5 @@ model todos {
   updated_at   DateTime  @default(now()) @db.Timestamptz(6)
 
   @@index([is_completed], map: "idx_todos_is_completed")
-  @@ignore
+  @@index([due_at], map: "idx_todos_due_at")
 }

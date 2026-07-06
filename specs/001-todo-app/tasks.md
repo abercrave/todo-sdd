@@ -49,16 +49,16 @@ This is an existing web application with three packages:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Update `api/prisma/schema.prisma`: remove the `@@ignore` attribute from the `todos` model and add an index on `due_at`
-- [ ] T007 Run `pnpm exec prisma migrate dev` in `api/` to apply the schema change from T006
-- [ ] T008 [P] Create `shared/src/todo.schema.ts` with `createTodoSchema`, `updateTodoSchema`, and their inferred types, per the validation rules in `specs/001-todo-app/data-model.md`
-- [ ] T009 [P] Create `shared/src/index.ts` exporting everything from `todo.schema.ts`
-- [ ] T010 [P] Create `ZodValidationPipe` in `api/src/common/zod-validation.pipe.ts` (parses request bodies with a given Zod schema, throws `BadRequestException` with issue details on failure)
-- [ ] T011 [P] Create a global HTTP exception filter in `api/src/common/http-exception.filter.ts` that shapes every error response as `{ message, errors }` per `specs/001-todo-app/contracts/todos-api.md`, and register it in `api/src/main.ts`
-- [ ] T012 Create `PrismaService` in `api/src/prisma/prisma.service.ts` and `PrismaModule` in `api/src/prisma/prisma.module.ts`; register `PrismaModule` in `api/src/app.module.ts`
-- [ ] T013 [P] Scaffold `TodosModule`, an empty `TodosController`, and an empty `TodosService` in `api/src/todos/`; register `TodosModule` in `api/src/app.module.ts`
-- [ ] T014 [P] Create a `useTodos` hook skeleton in `ui/src/features/todos/useTodos.ts` exposing `{ todos, status, error, create, update, remove }` (status: `loading` | `error` | `empty` | `ready`)
-- [ ] T015 [P] Create the `ui/src/features/todos/` feature directory and mount a todos section/page in `ui/src/App.tsx`
+- [X] T006 Update `api/prisma/schema.prisma`: remove the `@@ignore` attribute from the `todos` model and add an index on `due_at`
+- [X] T007 Run `pnpm exec prisma migrate dev` in `api/` to apply the schema change from T006
+- [X] T008 [P] Create `shared/src/todo.schema.ts` with `createTodoSchema`, `updateTodoSchema`, and their inferred types, per the validation rules in `specs/001-todo-app/data-model.md`
+- [X] T009 [P] Create `shared/src/index.ts` exporting everything from `todo.schema.ts`
+- [X] T010 [P] Create `ZodValidationPipe` in `api/src/common/zod-validation.pipe.ts` (parses request bodies with a given Zod schema, throws `BadRequestException` with issue details on failure)
+- [X] T011 [P] Create a global HTTP exception filter in `api/src/common/http-exception.filter.ts` that shapes every error response as `{ message, errors }` per `specs/001-todo-app/contracts/todos-api.md`, and register it in `api/src/main.ts`
+- [X] T012 Create `PrismaService` in `api/src/prisma/prisma.service.ts` and `PrismaModule` in `api/src/prisma/prisma.module.ts`; register `PrismaModule` in `api/src/app.module.ts`
+- [X] T013 [P] Scaffold `TodosModule`, an empty `TodosController`, and an empty `TodosService` in `api/src/todos/`; register `TodosModule` in `api/src/app.module.ts`
+- [X] T014 [P] Create a `useTodos` hook skeleton in `ui/src/features/todos/useTodos.ts` exposing `{ todos, status, error, create, update, remove }` (status: `loading` | `error` | `empty` | `ready`)
+- [X] T015 [P] Create the `ui/src/features/todos/` feature directory and mount a todos section/page in `ui/src/App.tsx`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 

@@ -18,6 +18,8 @@ You are a software engineer with 20 years of experience. You are working on this
 - Database: Postgres
 - ORM: Prisma
 - Testing: Vitest (frontend), Jest (backend)
+- Linting: Oxlint (frontend), ESLint (backend)
+- Formatting: Oxfmt (frontend), ESLint (backend)
 
 ## Tone & Approach
 

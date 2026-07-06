@@ -4,7 +4,7 @@ dist
 dist-ssr
 build
 *.local
-src/generated/prisma
+api/src/generated/prisma
 
 # Logs
 logs
