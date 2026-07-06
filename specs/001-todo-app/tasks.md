@@ -76,13 +76,13 @@ This is an existing web application with three packages:
 
 - [ ] T016 [P] [US1] Jest unit tests for `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.spec.ts` (valid creation, blank-title rejection)
 - [ ] T017 [P] [US1] Supertest integration tests for `POST /todos` and `GET /todos` in `api/test/todos.e2e-spec.ts`, run against the real Postgres container
-- [ ] T018 [P] [US1] Vitest test for `TodoForm` in `ui/src/features/todos/TodoForm.test.tsx` (successful submit, inline blank-title error)
+- [ ] T018 [P] [US1] Vitest tests for `TodoForm` in `ui/src/features/todos/TodoForm.test.tsx` (successful submit, inline blank-title error, and a failed API create call showing a clear error message without adding the todo)
 
 ### Implementation for User Story 1
 
 - [ ] T019 [US1] Implement `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.ts` using `PrismaService` and `createTodoSchema` (depends on T008, T012, T013)
 - [ ] T020 [US1] Implement `POST /todos` and `GET /todos` handlers in `api/src/todos/todos.controller.ts` using `ZodValidationPipe` (depends on T010, T019)
-- [ ] T021 [US1] Implement `create` and the initial list fetch in `ui/src/features/todos/useTodos.ts` calling the API (depends on T014, T020)
+- [ ] T021 [US1] Implement `create` and the initial list fetch in `ui/src/features/todos/useTodos.ts` calling the API, catching failed requests by setting `status: 'error'` with a message and leaving the list unchanged until the API confirms success (depends on T014, T020)
 - [ ] T022 [US1] Implement `TodoForm` in `ui/src/features/todos/TodoForm.tsx` (title/description/dueDate fields, shared-schema validation, inline error display) (depends on T008)
 - [ ] T023 [US1] Implement a minimal `TodoList` (at least each todo's title) in `ui/src/features/todos/TodoList.tsx` (depends on T021)
 - [ ] T024 [US1] Wire `TodoForm` and `TodoList` into the page from T015 so creating a todo shows it in the list and it persists across a reload (depends on T021, T022, T023)
@@ -101,13 +101,13 @@ This is an existing web application with three packages:
 
 - [ ] T025 [P] [US2] Jest unit tests for `TodosService.update` (toggling `isCompleted`) in `api/src/todos/todos.service.spec.ts`
 - [ ] T026 [P] [US2] Supertest integration tests for `PATCH /todos/:id` (toggle) and the empty-array `GET /todos` case in `api/test/todos.e2e-spec.ts`
-- [ ] T027 [P] [US2] Vitest tests for `TodoList` in `ui/src/features/todos/TodoList.test.tsx` covering full field display, the complete/incomplete toggle, and the empty state
+- [ ] T027 [P] [US2] Vitest tests for `TodoList` in `ui/src/features/todos/TodoList.test.tsx` covering full field display, the complete/incomplete toggle (including a failed toggle showing a clear error without changing the item's status), and the empty state
 
 ### Implementation for User Story 2
 
 - [ ] T028 [US2] Implement `TodosService.update` (partial update including `isCompleted`, validated via `updateTodoSchema`) in `api/src/todos/todos.service.ts` (depends on T019)
 - [ ] T029 [US2] Implement `PATCH /todos/:id` handler (404 when the id doesn't exist) in `api/src/todos/todos.controller.ts` (depends on T010, T028)
-- [ ] T030 [US2] Implement `update`/toggle in `ui/src/features/todos/useTodos.ts` (depends on T021, T029)
+- [ ] T030 [US2] Implement `update`/toggle in `ui/src/features/todos/useTodos.ts`, surfacing a failed update/toggle as `status: 'error'` with a message without mutating the item's local state (depends on T021, T029)
 - [ ] T031 [US2] Expand the list into `ui/src/features/todos/TodoList.tsx` + new `ui/src/features/todos/TodoItem.tsx`, showing title, description, due date, and completion status, with a per-item toggle control (depends on T023, T030)
 - [ ] T032 [US2] Add the distinct empty-state view when there are zero todos (depends on T031)
 
@@ -125,13 +125,13 @@ This is an existing web application with three packages:
 
 - [ ] T033 [P] [US3] Jest unit tests for `TodosService.remove` (delete, 404 on missing id) and for blank-title rejection on edit, in `api/src/todos/todos.service.spec.ts`
 - [ ] T034 [P] [US3] Supertest integration tests for `DELETE /todos/:id` and for PATCH-based edit rejection of a blank title, in `api/test/todos.e2e-spec.ts`
-- [ ] T035 [P] [US3] Vitest tests for the edit and delete interactions in `ui/src/features/todos/TodoItem.test.tsx`
+- [ ] T035 [P] [US3] Vitest tests for the edit and delete interactions in `ui/src/features/todos/TodoItem.test.tsx`, including a failed edit and a failed delete each showing a clear error message without changing or removing the item
 
 ### Implementation for User Story 3
 
 - [ ] T036 [US3] Implement `TodosService.remove` in `api/src/todos/todos.service.ts` (depends on T019)
 - [ ] T037 [US3] Implement `DELETE /todos/:id` handler (204/404) in `api/src/todos/todos.controller.ts` (depends on T010, T036)
-- [ ] T038 [US3] Add `remove` to `ui/src/features/todos/useTodos.ts` (depends on T021, T037)
+- [ ] T038 [US3] Add `remove` to `ui/src/features/todos/useTodos.ts`, surfacing a failed delete as `status: 'error'` with a message without removing the item locally until success (depends on T021, T037)
 - [ ] T039 [US3] Add an edit mode to `TodoForm` (pre-filled from an existing todo, reusing the create form) wired to `useTodos().update`, launched from `TodoItem`, in `ui/src/features/todos/TodoForm.tsx` and `TodoItem.tsx` (depends on T022, T030, T031)
 - [ ] T040 [US3] Add a delete action to `TodoItem` wired to `useTodos().remove`, in `ui/src/features/todos/TodoItem.tsx` (depends on T031, T038)
 

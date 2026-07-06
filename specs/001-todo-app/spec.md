@@ -97,8 +97,9 @@ confirming it no longer appears in the list.
 - What happens when the description is left blank? The system MUST accept the
   todo, since a description is optional.
 - What happens when the title or description is extremely long? The system
-  MUST enforce a reasonable maximum length and reject input beyond it with a
-  clear message rather than silently truncating.
+  MUST reject a title over 255 characters or a description over 2000
+  characters with a clear message rather than silently truncating (see
+  data-model.md for the authoritative limits).
 - What happens if the connection to storage is unavailable when the user tries
   to create, edit, complete, or delete a todo? The system MUST show a clear
   error message and MUST NOT report success for an action that wasn't saved.

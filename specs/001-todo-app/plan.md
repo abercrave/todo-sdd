@@ -67,7 +67,9 @@ the design artifacts and are now ✅ Pass:
   `contracts/todos-api.md` and `data-model.md` are both defined in terms of
   that one shared schema.
 - _Testing Standards_: `research.md` §5 adds Vitest to `ui`; `quickstart.md`
-  names the Jest/Supertest (real Postgres) and Vitest/RTL suites required.
+  names the Jest/Supertest (real Postgres) and Vitest/RTL suites required;
+  `tasks.md` T018/T027/T035 explicitly cover failed-API edge/error states
+  (not just happy paths), per the constitution's "edge/error states" clause.
 - _Performance Requirements_: `research.md` §6 adds the `due_at` index and
   removes `@@ignore`; `contracts/todos-api.md` keeps payloads field-scoped
   rather than over-fetching.
@@ -97,7 +99,7 @@ api/                          # NestJS backend (existing)
 │   │   ├── todos.controller.ts
 │   │   ├── todos.service.ts
 │   │   ├── todos.module.ts
-│   │   └── todos.controller.spec.ts / todos.service.spec.ts
+│   │   └── todos.service.spec.ts   # controller behavior covered by the e2e suite below
 │   ├── prisma/
 │   │   └── prisma.service.ts   # Injectable PrismaClient wrapper
 │   ├── app.module.ts
