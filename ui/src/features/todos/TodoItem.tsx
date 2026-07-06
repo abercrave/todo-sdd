@@ -43,7 +43,7 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
 
   if (isEditing) {
     return (
-      <li>
+      <li className="todo-item todo-item-editing">
         <TodoForm
           submitLabel="Save changes"
           initialValues={{
@@ -53,36 +53,44 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
           }}
           onSubmit={handleEditSubmit}
         />
-        <button type="button" onClick={() => setIsEditing(false)}>
-          Cancel
-        </button>
+        <div className="todo-actions">
+          <button type="button" className="button button-secondary" onClick={() => setIsEditing(false)}>
+            Cancel
+          </button>
+        </div>
       </li>
     )
   }
 
   return (
-    <li>
-      <label>
+    <li className={todo.isCompleted ? 'todo-item todo-item-done' : 'todo-item'}>
+      <label className="todo-checkbox">
         <input
           type="checkbox"
           checked={todo.isCompleted}
           onChange={() => void handleToggle()}
         />
-        <span>{todo.title}</span>
+        <span className="todo-title">{todo.title}</span>
       </label>
 
-      {todo.description && <p>{todo.description}</p>}
-      {todo.dueAt && <p>Due {new Date(todo.dueAt).toLocaleDateString()}</p>}
-      <p>{todo.isCompleted ? 'Done' : 'Not done'}</p>
+      {todo.description && <p className="todo-description">{todo.description}</p>}
+      {todo.dueAt && <p className="todo-due">Due {new Date(todo.dueAt).toLocaleDateString()}</p>}
+      <p className="todo-status">{todo.isCompleted ? 'Done' : 'Not done'}</p>
 
-      <button type="button" onClick={() => setIsEditing(true)}>
-        Edit
-      </button>
-      <button type="button" onClick={() => void handleRemove()}>
-        Delete
-      </button>
+      <div className="todo-actions">
+        <button type="button" className="button button-secondary" onClick={() => setIsEditing(true)}>
+          Edit
+        </button>
+        <button type="button" className="button button-danger" onClick={() => void handleRemove()}>
+          Delete
+        </button>
+      </div>
 
-      {(toggleError ?? removeError) && <p role="alert">{toggleError ?? removeError}</p>}
+      {(toggleError ?? removeError) && (
+        <p className="alert" role="alert">
+          {toggleError ?? removeError}
+        </p>
+      )}
     </li>
   )
 }

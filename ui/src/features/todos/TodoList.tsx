@@ -10,11 +10,11 @@ export interface TodoListProps {
 
 export function TodoList({ todos, onToggle, onUpdate, onRemove }: TodoListProps) {
   if (todos.length === 0) {
-    return <p>No todos yet. Add one above to get started.</p>
+    return <p className="empty-state">No todos yet. Add one above to get started.</p>
   }
 
   return (
-    <ul>
+    <ul className="todo-list">
       {todos.map((todo) => (
         <TodoItem
           key={todo.id}

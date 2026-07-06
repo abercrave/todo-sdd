@@ -57,13 +57,13 @@ export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: 
   }
 
   return (
-    <form onSubmit={(event) => void handleSubmit(event)}>
-      <div>
+    <form className="todo-form" onSubmit={(event) => void handleSubmit(event)}>
+      <div className="field">
         <label htmlFor={titleId}>Title</label>
         <input id={titleId} value={title} onChange={(event) => setTitle(event.target.value)} />
       </div>
 
-      <div>
+      <div className="field">
         <label htmlFor={descriptionId}>Description</label>
         <textarea
           id={descriptionId}
@@ -72,7 +72,7 @@ export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: 
         />
       </div>
 
-      <div>
+      <div className="field">
         <label htmlFor={dueAtId}>Due date</label>
         <input
           id={dueAtId}
@@ -82,9 +82,17 @@ export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: 
         />
       </div>
 
-      {(fieldError ?? submitError) && <p role="alert">{fieldError ?? submitError}</p>}
+      {(fieldError ?? submitError) && (
+        <p className="alert" role="alert">
+          {fieldError ?? submitError}
+        </p>
+      )}
 
-      <button type="submit">{submitLabel}</button>
+      <div className="form-actions">
+        <button type="submit" className="button">
+          {submitLabel}
+        </button>
+      </div>
     </form>
   )
 }
