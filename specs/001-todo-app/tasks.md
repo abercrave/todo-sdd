@@ -143,10 +143,10 @@ This is an existing web application with three packages:
 
 **Purpose**: Verify the full feature against its automated and manual acceptance criteria
 
-- [ ] T041 [P] Run `pnpm --filter api test` and `pnpm --filter api test:e2e`; fix any failures
-- [ ] T042 [P] Run `pnpm --filter ui test`; fix any failures
-- [ ] T043 [P] Run `pnpm --filter api lint` and `pnpm --filter ui lint`; resolve any issues
-- [ ] T044 Execute the manual validation scenarios in `specs/001-todo-app/quickstart.md` end-to-end and fix any discrepancies found
+- [X] T041 [P] Run `pnpm --filter api test` and `pnpm --filter api test:e2e`; fix any failures
+- [X] T042 [P] Run `pnpm --filter ui test`; fix any failures
+- [X] T043 [P] Run `pnpm --filter api lint` and `pnpm --filter ui lint`; resolve any issues
+- [X] T044 Execute the manual validation scenarios in `specs/001-todo-app/quickstart.md` end-to-end and fix any discrepancies found
 
 ---
 

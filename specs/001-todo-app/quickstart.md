@@ -12,8 +12,11 @@ for the exact request/response shapes.
 ## Setup
 
 ```bash
-# from repo root, once the shared/ workspace package exists
+# from repo root
 pnpm install
+
+# build the shared Zod schemas (api and ui consume the compiled dist/ output)
+pnpm --filter shared build
 
 # start Postgres
 cd api && pnpm db:start
@@ -27,6 +30,10 @@ pnpm start:dev
 # in a second terminal: start the frontend
 cd ../ui && pnpm dev
 ```
+
+If you change anything in `shared/src/`, re-run `pnpm --filter shared build`
+before restarting `api`/`ui` dev servers — they resolve `shared` via its
+built `dist/` output, not the raw TypeScript source.
 
 ## Validation scenarios
 
