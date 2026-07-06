@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { todoSchema } from 'shared'
+import { todoListSchema, todoSchema } from 'shared'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
-
-const todoListSchema = todoSchema.array()
 
 export type TodosStatus = 'loading' | 'error' | 'empty' | 'ready'
 
@@ -19,6 +17,22 @@ const API_BASE = '/todos'
 
 function statusForTodos(todos: Todo[]): TodosStatus {
   return todos.length === 0 ? 'empty' : 'ready'
+}
+
+function isZodError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { name?: unknown }).name === 'ZodError' &&
+    Array.isArray((err as { issues?: unknown }).issues)
+  )
+}
+
+function toErrorMessage(err: unknown, fallback: string): string {
+  if (isZodError(err)) {
+    return 'Received unexpected data from the server.'
+  }
+  return err instanceof Error ? err.message : fallback
 }
 
 async function readErrorMessage(response: Response): Promise<string> {
@@ -48,7 +62,7 @@ export function useTodos(): UseTodosResult {
       setStatus(statusForTodos(data))
     } catch (err) {
       setStatus('error')
-      setError(err instanceof Error ? err.message : 'Failed to load todos')
+      setError(toErrorMessage(err, 'Failed to load todos'))
     }
   }, [])
 
@@ -75,7 +89,7 @@ export function useTodos(): UseTodosResult {
       setError(null)
     } catch (err) {
       // The list is left untouched on failure - nothing was added until the API confirmed success.
-      setError(err instanceof Error ? err.message : 'Failed to create todo')
+      setError(toErrorMessage(err, 'Failed to create todo'))
       throw err
     }
   }, [])
@@ -95,7 +109,7 @@ export function useTodos(): UseTodosResult {
       setError(null)
     } catch (err) {
       // The item is left untouched on failure - nothing changed until the API confirmed success.
-      setError(err instanceof Error ? err.message : 'Failed to update todo')
+      setError(toErrorMessage(err, 'Failed to update todo'))
       throw err
     }
   }, [])
@@ -114,7 +128,7 @@ export function useTodos(): UseTodosResult {
       setError(null)
     } catch (err) {
       // The item is left untouched on failure - nothing was removed until the API confirmed success.
-      setError(err instanceof Error ? err.message : 'Failed to delete todo')
+      setError(toErrorMessage(err, 'Failed to delete todo'))
       throw err
     }
   }, [])

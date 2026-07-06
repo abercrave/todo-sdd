@@ -33,4 +33,22 @@ describe('useTodos', () => {
     expect(result.current.todos[0].createdAt).toBeInstanceOf(Date)
     expect(result.current.todos[0].updatedAt).toBeInstanceOf(Date)
   })
+
+  it('shows a friendly message, not raw Zod issue JSON, when the API response fails validation', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        // Missing every required field - todoListSchema.parse will throw a ZodError.
+        json: () => Promise.resolve([{}]),
+      }),
+    )
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => expect(result.current.status).toBe('error'))
+
+    expect(result.current.error).toBe('Received unexpected data from the server.')
+    expect(result.current.error).not.toContain('{')
+  })
 })

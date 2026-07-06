@@ -25,6 +25,8 @@ export const todoSchema = z.object({
 
 export type Todo = z.infer<typeof todoSchema>;
 
+export const todoListSchema = todoSchema.array();
+
 export const createTodoSchema = z.object({
   title: titleSchema,
   description: descriptionSchema.optional(),
