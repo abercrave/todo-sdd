@@ -6,3 +6,13 @@
 - Implementation tasks (new features, refactors): Use Sonnet
 - Simple edits, formatting, renaming: Use Haiku
 - Security-sensitive changes: Always escalate to Opus for review
+
+## Tech Stack
+
+- Language: TypeScript (strict mode)
+- Backend: NestJS
+- Frontend: React + Vite
+- Validation: Zod (shared frontend/backend)
+- Database: Postgres
+- ORM: Prisma
+- Testing: Vitest (frontend), Jest (backend)
