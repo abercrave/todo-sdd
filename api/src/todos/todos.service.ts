@@ -55,6 +55,15 @@ export class TodosService {
     return this.toApiTodo(row);
   }
 
+  async remove(id: number): Promise<void> {
+    const existing = await this.prisma.todos.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundException(`Todo ${id} not found`);
+    }
+
+    await this.prisma.todos.delete({ where: { id } });
+  }
+
   private toApiTodo(row: TodoRow): Todo {
     return {
       id: row.id,

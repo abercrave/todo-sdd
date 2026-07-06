@@ -12,6 +12,7 @@ describe('TodosService', () => {
       findMany: ReturnType<typeof jest.fn>;
       findUnique: ReturnType<typeof jest.fn>;
       update: ReturnType<typeof jest.fn>;
+      delete: ReturnType<typeof jest.fn>;
     };
   };
 
@@ -22,6 +23,7 @@ describe('TodosService', () => {
         findMany: jest.fn(),
         findUnique: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
       },
     };
 
@@ -156,6 +158,34 @@ describe('TodosService', () => {
         BadRequestException,
       );
       expect(prisma.todos.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('remove', () => {
+    const existingRow = {
+      id: 1,
+      title: 'A',
+      description: null,
+      is_completed: false,
+      due_at: null,
+      created_at: new Date('2026-07-06T12:00:00.000Z'),
+      updated_at: new Date('2026-07-06T12:00:00.000Z'),
+    };
+
+    it('deletes an existing todo', async () => {
+      prisma.todos.findUnique.mockResolvedValue(existingRow);
+      prisma.todos.delete.mockResolvedValue(existingRow);
+
+      await service.remove(1);
+
+      expect(prisma.todos.delete).toHaveBeenCalledWith({ where: { id: 1 } });
+    });
+
+    it('throws NotFoundException when the todo does not exist', async () => {
+      prisma.todos.findUnique.mockResolvedValue(null);
+
+      await expect(service.remove(999)).rejects.toThrow(NotFoundException);
+      expect(prisma.todos.delete).not.toHaveBeenCalled();
     });
   });
 });

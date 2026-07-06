@@ -4,7 +4,7 @@ import { TodoList } from './features/todos/TodoList'
 import './App.css'
 
 function App() {
-  const { todos, status, error, create, update } = useTodos()
+  const { todos, status, error, create, update, remove } = useTodos()
 
   return (
     <main>
@@ -19,6 +19,8 @@ function App() {
         <TodoList
           todos={todos}
           onToggle={(id, isCompleted) => update(id, { isCompleted })}
+          onUpdate={update}
+          onRemove={remove}
         />
       )}
     </main>

@@ -125,5 +125,48 @@ describe('Todos (e2e)', () => {
         .send({ isCompleted: true })
         .expect(404);
     });
+
+    it('rejects a blank title edit with 400 and leaves the todo unchanged', async () => {
+      const created = await request(app.getHttpServer())
+        .post('/todos')
+        .send({ title: 'Task A' })
+        .expect(201);
+      const { id } = created.body as TodoResponseBody;
+
+      const response = await request(app.getHttpServer())
+        .patch(`/todos/${id}`)
+        .send({ title: '   ' })
+        .expect(400);
+
+      const body = response.body as ErrorResponseBody;
+      expect(body.message).toBeDefined();
+      expect(Array.isArray(body.errors)).toBe(true);
+
+      const unchanged = await request(app.getHttpServer())
+        .get('/todos')
+        .expect(200);
+      expect((unchanged.body as TodoResponseBody[])[0]).toMatchObject({
+        title: 'Task A',
+      });
+    });
+  });
+
+  describe('DELETE /todos/:id', () => {
+    it('deletes an existing todo', async () => {
+      const created = await request(app.getHttpServer())
+        .post('/todos')
+        .send({ title: 'Task A' })
+        .expect(201);
+      const { id } = created.body as TodoResponseBody;
+
+      await request(app.getHttpServer()).delete(`/todos/${id}`).expect(204);
+
+      const list = await request(app.getHttpServer()).get('/todos').expect(200);
+      expect(list.body).toEqual([]);
+    });
+
+    it('returns 404 when the todo does not exist', async () => {
+      await request(app.getHttpServer()).delete('/todos/999999').expect(404);
+    });
   });
 });

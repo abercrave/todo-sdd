@@ -97,7 +97,24 @@ export function useTodos(): UseTodosResult {
     }
   }, [])
 
-  const remove = async (_id: number) => {}
+  const remove = useCallback(async (id: number) => {
+    try {
+      const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+      if (!response.ok) {
+        throw new Error(await readErrorMessage(response))
+      }
+      setTodos((current) => {
+        const next = current.filter((todo) => todo.id !== id)
+        setStatus(statusForTodos(next))
+        return next
+      })
+      setError(null)
+    } catch (err) {
+      // The item is left untouched on failure - nothing was removed until the API confirmed success.
+      setError(err instanceof Error ? err.message : 'Failed to delete todo')
+      throw err
+    }
+  }, [])
 
   return { todos, status, error, create, update, remove }
 }

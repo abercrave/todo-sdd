@@ -1,16 +1,29 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createTodoSchema } from 'shared'
 import type { CreateTodoInput } from 'shared'
 
-export interface TodoFormProps {
-  onSubmit: (input: CreateTodoInput) => Promise<void>
+export interface TodoFormInitialValues {
+  title: string
+  description: string
+  dueAt: string
 }
 
-export function TodoForm({ onSubmit }: TodoFormProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [dueAt, setDueAt] = useState('')
+export interface TodoFormProps {
+  onSubmit: (input: CreateTodoInput) => Promise<void>
+  initialValues?: TodoFormInitialValues
+  submitLabel?: string
+}
+
+export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: TodoFormProps) {
+  const formId = useId()
+  const titleId = `${formId}-title`
+  const descriptionId = `${formId}-description`
+  const dueAtId = `${formId}-due-at`
+
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [description, setDescription] = useState(initialValues?.description ?? '')
+  const [dueAt, setDueAt] = useState(initialValues?.dueAt ?? '')
   const [fieldError, setFieldError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -33,9 +46,11 @@ export function TodoForm({ onSubmit }: TodoFormProps) {
 
     try {
       await onSubmit(parsed.data)
-      setTitle('')
-      setDescription('')
-      setDueAt('')
+      if (!initialValues) {
+        setTitle('')
+        setDescription('')
+        setDueAt('')
+      }
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to save todo')
     }
@@ -44,23 +59,23 @@ export function TodoForm({ onSubmit }: TodoFormProps) {
   return (
     <form onSubmit={(event) => void handleSubmit(event)}>
       <div>
-        <label htmlFor="todo-title">Title</label>
-        <input id="todo-title" value={title} onChange={(event) => setTitle(event.target.value)} />
+        <label htmlFor={titleId}>Title</label>
+        <input id={titleId} value={title} onChange={(event) => setTitle(event.target.value)} />
       </div>
 
       <div>
-        <label htmlFor="todo-description">Description</label>
+        <label htmlFor={descriptionId}>Description</label>
         <textarea
-          id="todo-description"
+          id={descriptionId}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
         />
       </div>
 
       <div>
-        <label htmlFor="todo-due-at">Due date</label>
+        <label htmlFor={dueAtId}>Due date</label>
         <input
-          id="todo-due-at"
+          id={dueAtId}
           type="date"
           value={dueAt}
           onChange={(event) => setDueAt(event.target.value)}
@@ -69,7 +84,7 @@ export function TodoForm({ onSubmit }: TodoFormProps) {
 
       {(fieldError ?? submitError) && <p role="alert">{fieldError ?? submitError}</p>}
 
-      <button type="submit">Add todo</button>
+      <button type="submit">{submitLabel}</button>
     </form>
   )
 }

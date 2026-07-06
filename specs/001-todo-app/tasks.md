@@ -123,17 +123,17 @@ This is an existing web application with three packages:
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T033 [P] [US3] Jest unit tests for `TodosService.remove` (delete, 404 on missing id) and for blank-title rejection on edit, in `api/src/todos/todos.service.spec.ts`
-- [ ] T034 [P] [US3] Supertest integration tests for `DELETE /todos/:id` and for PATCH-based edit rejection of a blank title, in `api/test/todos.e2e-spec.ts`
-- [ ] T035 [P] [US3] Vitest tests for the edit and delete interactions in `ui/src/features/todos/TodoItem.test.tsx`, including a failed edit and a failed delete each showing a clear error message without changing or removing the item
+- [X] T033 [P] [US3] Jest unit tests for `TodosService.remove` (delete, 404 on missing id) and for blank-title rejection on edit, in `api/src/todos/todos.service.spec.ts`
+- [X] T034 [P] [US3] Supertest integration tests for `DELETE /todos/:id` and for PATCH-based edit rejection of a blank title, in `api/test/todos.e2e-spec.ts`
+- [X] T035 [P] [US3] Vitest tests for the edit and delete interactions in `ui/src/features/todos/TodoItem.test.tsx`, including a failed edit and a failed delete each showing a clear error message without changing or removing the item
 
 ### Implementation for User Story 3
 
-- [ ] T036 [US3] Implement `TodosService.remove` in `api/src/todos/todos.service.ts` (depends on T019)
-- [ ] T037 [US3] Implement `DELETE /todos/:id` handler (204/404) in `api/src/todos/todos.controller.ts` (depends on T010, T036)
-- [ ] T038 [US3] Add `remove` to `ui/src/features/todos/useTodos.ts`, surfacing a failed delete as `status: 'error'` with a message without removing the item locally until success (depends on T021, T037)
-- [ ] T039 [US3] Add an edit mode to `TodoForm` (pre-filled from an existing todo, reusing the create form) wired to `useTodos().update`, launched from `TodoItem`, in `ui/src/features/todos/TodoForm.tsx` and `TodoItem.tsx` (depends on T022, T030, T031)
-- [ ] T040 [US3] Add a delete action to `TodoItem` wired to `useTodos().remove`, in `ui/src/features/todos/TodoItem.tsx` (depends on T031, T038)
+- [X] T036 [US3] Implement `TodosService.remove` in `api/src/todos/todos.service.ts` (depends on T019)
+- [X] T037 [US3] Implement `DELETE /todos/:id` handler (204/404) in `api/src/todos/todos.controller.ts` (depends on T010, T036)
+- [X] T038 [US3] Add `remove` to `ui/src/features/todos/useTodos.ts`, surfacing a failed delete as `status: 'error'` with a message without removing the item locally until success (depends on T021, T037)
+- [X] T039 [US3] Add an edit mode to `TodoForm` (pre-filled from an existing todo, reusing the create form) wired to `useTodos().update`, launched from `TodoItem`, in `ui/src/features/todos/TodoForm.tsx` and `TodoItem.tsx` (depends on T022, T030, T031)
+- [X] T040 [US3] Add a delete action to `TodoItem` wired to `useTodos().remove`, in `ui/src/features/todos/TodoItem.tsx` (depends on T031, T038)
 
 **Checkpoint**: All user stories should now be independently functional
 

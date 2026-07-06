@@ -15,12 +15,14 @@ const baseTodo: Todo = {
 
 describe('TodoList', () => {
   it('shows a distinct empty state when there are no todos', () => {
-    render(<TodoList todos={[]} onToggle={vi.fn()} />)
+    render(<TodoList todos={[]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
     expect(screen.getByText(/no todos yet/i)).toBeInTheDocument()
   })
 
   it("displays each todo's title, description, due date, and completion status", () => {
-    render(<TodoList todos={[baseTodo]} onToggle={vi.fn()} />)
+    render(
+      <TodoList todos={[baseTodo]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />,
+    )
 
     expect(screen.getByText('Buy groceries')).toBeInTheDocument()
     expect(screen.getByText('Milk, eggs')).toBeInTheDocument()
@@ -29,7 +31,9 @@ describe('TodoList', () => {
 
   it('toggles a todo to complete', async () => {
     const onToggle = vi.fn().mockResolvedValue(undefined)
-    render(<TodoList todos={[baseTodo]} onToggle={onToggle} />)
+    render(
+      <TodoList todos={[baseTodo]} onToggle={onToggle} onUpdate={vi.fn()} onRemove={vi.fn()} />,
+    )
 
     fireEvent.click(screen.getByRole('checkbox'))
 
@@ -40,7 +44,9 @@ describe('TodoList', () => {
 
   it('shows a clear error and leaves the status unchanged when the toggle fails', async () => {
     const onToggle = vi.fn().mockRejectedValue(new Error('Network error'))
-    render(<TodoList todos={[baseTodo]} onToggle={onToggle} />)
+    render(
+      <TodoList todos={[baseTodo]} onToggle={onToggle} onUpdate={vi.fn()} onRemove={vi.fn()} />,
+    )
 
     fireEvent.click(screen.getByRole('checkbox'))
 

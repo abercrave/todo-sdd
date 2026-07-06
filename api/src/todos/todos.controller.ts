@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -37,5 +38,11 @@ export class TodosController {
     @Body(new ZodValidationPipe(updateTodoSchema)) body: UpdateTodoInput,
   ): Promise<Todo> {
     return this.todosService.update(id, body);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.todosService.remove(id);
   }
 }
