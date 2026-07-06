@@ -13,4 +13,7 @@ export default defineConfig({
       '/todos': 'http://localhost:3000',
     },
   },
+  optimizeDeps: {
+    include: ['shared'],
+  },
 })

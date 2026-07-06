@@ -74,18 +74,18 @@ This is an existing web application with three packages:
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T016 [P] [US1] Jest unit tests for `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.spec.ts` (valid creation, blank-title rejection)
-- [ ] T017 [P] [US1] Supertest integration tests for `POST /todos` and `GET /todos` in `api/test/todos.e2e-spec.ts`, run against the real Postgres container
-- [ ] T018 [P] [US1] Vitest tests for `TodoForm` in `ui/src/features/todos/TodoForm.test.tsx` (successful submit, inline blank-title error, and a failed API create call showing a clear error message without adding the todo)
+- [X] T016 [P] [US1] Jest unit tests for `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.spec.ts` (valid creation, blank-title rejection)
+- [X] T017 [P] [US1] Supertest integration tests for `POST /todos` and `GET /todos` in `api/test/todos.e2e-spec.ts`, run against the real Postgres container
+- [X] T018 [P] [US1] Vitest tests for `TodoForm` in `ui/src/features/todos/TodoForm.test.tsx` (successful submit, inline blank-title error, and a failed API create call showing a clear error message without adding the todo)
 
 ### Implementation for User Story 1
 
-- [ ] T019 [US1] Implement `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.ts` using `PrismaService` and `createTodoSchema` (depends on T008, T012, T013)
-- [ ] T020 [US1] Implement `POST /todos` and `GET /todos` handlers in `api/src/todos/todos.controller.ts` using `ZodValidationPipe` (depends on T010, T019)
-- [ ] T021 [US1] Implement `create` and the initial list fetch in `ui/src/features/todos/useTodos.ts` calling the API, catching failed requests by setting `status: 'error'` with a message and leaving the list unchanged until the API confirms success (depends on T014, T020)
-- [ ] T022 [US1] Implement `TodoForm` in `ui/src/features/todos/TodoForm.tsx` (title/description/dueDate fields, shared-schema validation, inline error display) (depends on T008)
-- [ ] T023 [US1] Implement a minimal `TodoList` (at least each todo's title) in `ui/src/features/todos/TodoList.tsx` (depends on T021)
-- [ ] T024 [US1] Wire `TodoForm` and `TodoList` into the page from T015 so creating a todo shows it in the list and it persists across a reload (depends on T021, T022, T023)
+- [X] T019 [US1] Implement `TodosService.create` and `TodosService.findAll` in `api/src/todos/todos.service.ts` using `PrismaService` and `createTodoSchema` (depends on T008, T012, T013)
+- [X] T020 [US1] Implement `POST /todos` and `GET /todos` handlers in `api/src/todos/todos.controller.ts` using `ZodValidationPipe` (depends on T010, T019)
+- [X] T021 [US1] Implement `create` and the initial list fetch in `ui/src/features/todos/useTodos.ts` calling the API, catching failed requests by setting `status: 'error'` with a message and leaving the list unchanged until the API confirms success (depends on T014, T020)
+- [X] T022 [US1] Implement `TodoForm` in `ui/src/features/todos/TodoForm.tsx` (title/description/dueDate fields, shared-schema validation, inline error display) (depends on T008)
+- [X] T023 [US1] Implement a minimal `TodoList` (at least each todo's title) in `ui/src/features/todos/TodoList.tsx` (depends on T021)
+- [X] T024 [US1] Wire `TodoForm` and `TodoList` into the page from T015 so creating a todo shows it in the list and it persists across a reload (depends on T021, T022, T023)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
