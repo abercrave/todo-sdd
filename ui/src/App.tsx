@@ -4,7 +4,7 @@ import { TodoList } from './features/todos/TodoList'
 import './App.css'
 
 function App() {
-  const { todos, status, error, create } = useTodos()
+  const { todos, status, error, create, update } = useTodos()
 
   return (
     <main>
@@ -15,8 +15,12 @@ function App() {
       <TodoForm onSubmit={create} />
 
       {status === 'loading' && <p>Loading todos…</p>}
-      {status === 'empty' && <p>No todos yet.</p>}
-      {(status === 'ready' || status === 'empty') && <TodoList todos={todos} />}
+      {(status === 'ready' || status === 'empty') && (
+        <TodoList
+          todos={todos}
+          onToggle={(id, isCompleted) => update(id, { isCompleted })}
+        />
+      )}
     </main>
   )
 }

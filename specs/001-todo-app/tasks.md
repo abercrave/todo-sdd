@@ -99,17 +99,17 @@ This is an existing web application with three packages:
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T025 [P] [US2] Jest unit tests for `TodosService.update` (toggling `isCompleted`) in `api/src/todos/todos.service.spec.ts`
-- [ ] T026 [P] [US2] Supertest integration tests for `PATCH /todos/:id` (toggle) and the empty-array `GET /todos` case in `api/test/todos.e2e-spec.ts`
-- [ ] T027 [P] [US2] Vitest tests for `TodoList` in `ui/src/features/todos/TodoList.test.tsx` covering full field display, the complete/incomplete toggle (including a failed toggle showing a clear error without changing the item's status), and the empty state
+- [X] T025 [P] [US2] Jest unit tests for `TodosService.update` (toggling `isCompleted`) in `api/src/todos/todos.service.spec.ts`
+- [X] T026 [P] [US2] Supertest integration tests for `PATCH /todos/:id` (toggle) and the empty-array `GET /todos` case in `api/test/todos.e2e-spec.ts`
+- [X] T027 [P] [US2] Vitest tests for `TodoList` in `ui/src/features/todos/TodoList.test.tsx` covering full field display, the complete/incomplete toggle (including a failed toggle showing a clear error without changing the item's status), and the empty state
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Implement `TodosService.update` (partial update including `isCompleted`, validated via `updateTodoSchema`) in `api/src/todos/todos.service.ts` (depends on T019)
-- [ ] T029 [US2] Implement `PATCH /todos/:id` handler (404 when the id doesn't exist) in `api/src/todos/todos.controller.ts` (depends on T010, T028)
-- [ ] T030 [US2] Implement `update`/toggle in `ui/src/features/todos/useTodos.ts`, surfacing a failed update/toggle as `status: 'error'` with a message without mutating the item's local state (depends on T021, T029)
-- [ ] T031 [US2] Expand the list into `ui/src/features/todos/TodoList.tsx` + new `ui/src/features/todos/TodoItem.tsx`, showing title, description, due date, and completion status, with a per-item toggle control (depends on T023, T030)
-- [ ] T032 [US2] Add the distinct empty-state view when there are zero todos (depends on T031)
+- [X] T028 [US2] Implement `TodosService.update` (partial update including `isCompleted`, validated via `updateTodoSchema`) in `api/src/todos/todos.service.ts` (depends on T019)
+- [X] T029 [US2] Implement `PATCH /todos/:id` handler (404 when the id doesn't exist) in `api/src/todos/todos.controller.ts` (depends on T010, T028)
+- [X] T030 [US2] Implement `update`/toggle in `ui/src/features/todos/useTodos.ts`, surfacing a failed update/toggle as `status: 'error'` with a message without mutating the item's local state (depends on T021, T029)
+- [X] T031 [US2] Expand the list into `ui/src/features/todos/TodoList.tsx` + new `ui/src/features/todos/TodoItem.tsx`, showing title, description, due date, and completion status, with a per-item toggle control (depends on T023, T030)
+- [X] T032 [US2] Add the distinct empty-state view when there are zero todos (depends on T031)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 

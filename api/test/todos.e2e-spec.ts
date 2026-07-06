@@ -102,4 +102,28 @@ describe('Todos (e2e)', () => {
       expect(body[0]).toMatchObject({ title: 'Task A' });
     });
   });
+
+  describe('PATCH /todos/:id', () => {
+    it('toggles a todo to complete', async () => {
+      const created = await request(app.getHttpServer())
+        .post('/todos')
+        .send({ title: 'Task A' })
+        .expect(201);
+      const { id } = created.body as TodoResponseBody;
+
+      const response = await request(app.getHttpServer())
+        .patch(`/todos/${id}`)
+        .send({ isCompleted: true })
+        .expect(200);
+
+      expect((response.body as TodoResponseBody).isCompleted).toBe(true);
+    });
+
+    it('returns 404 when the todo does not exist', async () => {
+      await request(app.getHttpServer())
+        .patch('/todos/999999')
+        .send({ isCompleted: true })
+        .expect(404);
+    });
+  });
 });

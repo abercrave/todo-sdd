@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { createTodoSchema } from 'shared';
-import type { CreateTodoInput, Todo } from 'shared';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { createTodoSchema, updateTodoSchema } from 'shared';
+import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared';
 import { parseWithZod } from '../common/zod-validation.pipe.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { todos as TodoRow } from '../generated/prisma/client.js';
@@ -28,6 +28,31 @@ export class TodosService {
       orderBy: { due_at: 'asc' },
     });
     return rows.map((row) => this.toApiTodo(row));
+  }
+
+  async update(id: number, input: UpdateTodoInput): Promise<Todo> {
+    const data = parseWithZod(updateTodoSchema, input);
+
+    const existing = await this.prisma.todos.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundException(`Todo ${id} not found`);
+    }
+
+    const row = await this.prisma.todos.update({
+      where: { id },
+      data: {
+        ...(data.title !== undefined && { title: data.title }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
+        ...(data.dueAt !== undefined && { due_at: data.dueAt }),
+        ...(data.isCompleted !== undefined && {
+          is_completed: data.isCompleted,
+        }),
+      },
+    });
+
+    return this.toApiTodo(row);
   }
 
   private toApiTodo(row: TodoRow): Todo {

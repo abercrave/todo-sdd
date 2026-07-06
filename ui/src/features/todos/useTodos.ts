@@ -77,7 +77,26 @@ export function useTodos(): UseTodosResult {
     }
   }, [])
 
-  const update = async (_id: number, _input: UpdateTodoInput) => {}
+  const update = useCallback(async (id: number, input: UpdateTodoInput) => {
+    try {
+      const response = await fetch(`${API_BASE}/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      })
+      if (!response.ok) {
+        throw new Error(await readErrorMessage(response))
+      }
+      const updated = (await response.json()) as Todo
+      setTodos((current) => current.map((todo) => (todo.id === id ? updated : todo)))
+      setError(null)
+    } catch (err) {
+      // The item is left untouched on failure - nothing changed until the API confirmed success.
+      setError(err instanceof Error ? err.message : 'Failed to update todo')
+      throw err
+    }
+  }, [])
+
   const remove = async (_id: number) => {}
 
   return { todos, status, error, create, update, remove }

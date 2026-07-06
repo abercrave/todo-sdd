@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { jest } from '@jest/globals';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -10,6 +10,8 @@ describe('TodosService', () => {
     todos: {
       create: ReturnType<typeof jest.fn>;
       findMany: ReturnType<typeof jest.fn>;
+      findUnique: ReturnType<typeof jest.fn>;
+      update: ReturnType<typeof jest.fn>;
     };
   };
 
@@ -18,6 +20,8 @@ describe('TodosService', () => {
       todos: {
         create: jest.fn(),
         findMany: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
       },
     };
 
@@ -102,6 +106,56 @@ describe('TodosService', () => {
           updatedAt: now,
         },
       ]);
+    });
+  });
+
+  describe('update', () => {
+    const now = new Date('2026-07-06T12:00:00.000Z');
+    const existingRow = {
+      id: 1,
+      title: 'A',
+      description: null,
+      is_completed: false,
+      due_at: null,
+      created_at: now,
+      updated_at: now,
+    };
+
+    it('toggles isCompleted on an existing todo', async () => {
+      prisma.todos.findUnique.mockResolvedValue(existingRow);
+      prisma.todos.update.mockResolvedValue({
+        ...existingRow,
+        is_completed: true,
+      });
+
+      const result = await service.update(1, { isCompleted: true });
+
+      expect(prisma.todos.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(prisma.todos.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { is_completed: true },
+      });
+      expect(result.isCompleted).toBe(true);
+    });
+
+    it('throws NotFoundException when the todo does not exist', async () => {
+      prisma.todos.findUnique.mockResolvedValue(null);
+
+      await expect(service.update(999, { isCompleted: true })).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prisma.todos.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects a blank title on edit without touching the database', async () => {
+      prisma.todos.findUnique.mockResolvedValue(existingRow);
+
+      await expect(service.update(1, { title: '   ' })).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(prisma.todos.update).not.toHaveBeenCalled();
     });
   });
 });
