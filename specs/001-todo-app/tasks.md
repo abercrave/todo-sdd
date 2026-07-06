@@ -35,11 +35,11 @@ This is an existing web application with three packages:
 
 **Purpose**: Stand up the shared-schema workspace package and frontend test tooling
 
-- [ ] T001 Create the `shared/` package skeleton: `shared/package.json`, `shared/tsconfig.json`, and an empty `shared/src/` directory
-- [ ] T002 Create a root-level `pnpm-workspace.yaml` listing `api`, `ui`, and `shared`, carrying over the `allowBuilds` settings currently in `api/pnpm-workspace.yaml`, then delete `api/pnpm-workspace.yaml`
-- [ ] T003 [P] Add `zod` as a dependency in `shared/package.json`
-- [ ] T004 [P] Add `shared` as a workspace dependency in `api/package.json` and `ui/package.json`
-- [ ] T005 [P] Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, and `jsdom` as dev dependencies in `ui/package.json`, add a `test` script, and create `ui/vitest.config.ts`
+- [X] T001 Create the `shared/` package skeleton: `shared/package.json`, `shared/tsconfig.json`, and an empty `shared/src/` directory
+- [X] T002 Create a root-level `pnpm-workspace.yaml` listing `api`, `ui`, and `shared`, carrying over the `allowBuilds` settings currently in `api/pnpm-workspace.yaml`, then delete `api/pnpm-workspace.yaml`
+- [X] T003 [P] Add `zod` as a dependency in `shared/package.json`
+- [X] T004 [P] Add `shared` as a workspace dependency in `api/package.json` and `ui/package.json`
+- [X] T005 [P] Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, and `jsdom` as dev dependencies in `ui/package.json`, add a `test` script, and create `ui/vitest.config.ts`
 
 ---
 
