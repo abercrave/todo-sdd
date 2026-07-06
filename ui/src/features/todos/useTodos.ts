@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
+import { todoSchema } from 'shared'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
+
+const todoListSchema = todoSchema.array()
 
 export type TodosStatus = 'loading' | 'error' | 'empty' | 'ready'
 
@@ -40,7 +43,7 @@ export function useTodos(): UseTodosResult {
       if (!response.ok) {
         throw new Error(await readErrorMessage(response))
       }
-      const data = (await response.json()) as Todo[]
+      const data = todoListSchema.parse(await response.json())
       setTodos(data)
       setStatus(statusForTodos(data))
     } catch (err) {
@@ -63,7 +66,7 @@ export function useTodos(): UseTodosResult {
       if (!response.ok) {
         throw new Error(await readErrorMessage(response))
       }
-      const created = (await response.json()) as Todo
+      const created = todoSchema.parse(await response.json())
       setTodos((current) => {
         const next = [...current, created]
         setStatus(statusForTodos(next))
@@ -87,7 +90,7 @@ export function useTodos(): UseTodosResult {
       if (!response.ok) {
         throw new Error(await readErrorMessage(response))
       }
-      const updated = (await response.json()) as Todo
+      const updated = todoSchema.parse(await response.json())
       setTodos((current) => current.map((todo) => (todo.id === id ? updated : todo)))
       setError(null)
     } catch (err) {
