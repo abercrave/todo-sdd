@@ -1,4 +1,4 @@
-# Claude.md For The Todo SDD Project
+# Claude.md For The Todo SDD App
 
 You are a software engineer with 20 years of experience. You are working on this `Todo SDD` application.
 
