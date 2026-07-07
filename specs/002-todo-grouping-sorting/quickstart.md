@@ -7,14 +7,16 @@ prerequisites are already met (Postgres running, `api` and `ui` installed).
 ## Prerequisites
 
 - `api/docker-compose.yml` Postgres container running (`pnpm --filter api db:start`)
-- Prisma migration for `completed_at` applied (`pnpm --filter api prisma migrate dev`)
+- Prisma migrations for `completed_at` and the new `settings` table applied
+  (`pnpm --filter api prisma migrate dev`)
 - `api` running (`pnpm --filter api start:dev`)
 - `ui` running (`pnpm --filter ui dev`)
 
 ## Automated checks
 
 ```bash
-# Backend: unit + integration (real Postgres) tests, including completed_at behavior
+# Backend: unit + integration (real Postgres) tests, including completed_at
+# behavior and GET/PUT /settings persistence + default fallback
 pnpm --filter api test
 pnpm --filter api test:e2e
 
@@ -73,8 +75,24 @@ pnpm --filter ui lint
      first), not the descending/ascending choice left over from "Title"
      (FR-018, FR-019).
 
+6. **Sort preference persists across reload (User Story 5)**
+   - With todos already created, switch the sort control to "Title" and
+     toggle direction to descending.
+   - Reload the page.
+   - Expected: the list is still sorted by "Title," descending — not reset
+     to the default (FR-020).
+   - Open the network tab (or equivalent) and confirm `GET /settings` and
+     `GET /todos` are requested at the same time, not one after the other
+     (`research.md` §11).
+   - Stop the `api` server, reload the page again.
+   - Expected: the list still renders (using `GET /todos`'s cached/failed
+     state per the base app's error handling) and the sort control falls
+     back to its default field/direction rather than showing a settings
+     error (FR-021).
+
 ## Reference
 
-- Response shape and `completedAt` behavior: [contracts/todos-api.md](./contracts/todos-api.md)
+- Todo response shape and `completedAt` behavior: [contracts/todos-api.md](./contracts/todos-api.md)
+- Settings persistence endpoints: [contracts/settings-api.md](./contracts/settings-api.md)
 - Entity/state details: [data-model.md](./data-model.md)
 - Design decisions and rationale: [research.md](./research.md)

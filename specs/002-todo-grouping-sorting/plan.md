@@ -9,10 +9,12 @@
 Split the todo list into an active section and a grayed-out "Completed"
 section below it, add a sort control (Date Created / Date Last Updated / Date
 Completed / Title) with an ascending/descending direction toggle for every
-field, and highlight incomplete todos whose due date has passed. All
-grouping, sorting, and overdue detection run client-side against the existing
-`GET /todos` payload; the only backend change is persisting a new
-`completedAt` timestamp so completion order is knowable. Per direction for
+field, and highlight incomplete todos whose due date has passed. Grouping,
+sorting, and overdue detection run client-side against the existing
+`GET /todos` payload; the backend adds a `completedAt` timestamp so
+completion order is knowable, and a new single-row `settings` table (exposed
+via `GET/PUT /settings`) so the user's chosen sort field and direction
+survive a page reload instead of resetting every visit. Per direction for
 this feature, the existing form elements (`TodoForm`, the complete-toggle
 checkbox, and the new sort control) are rebuilt on Radix UI primitives
 (`@radix-ui/react-form`, `@radix-ui/react-select`, `@radix-ui/react-checkbox`)
@@ -34,7 +36,9 @@ existing) — adding `@radix-ui/react-form`, `@radix-ui/react-select`, and
 for the todo form, sort control, and completion checkbox
 
 **Storage**: PostgreSQL via Prisma (existing `todos` table); adds a nullable
-`completed_at` timestamp column + index
+`completed_at` timestamp column + index; adds a new single-row `settings`
+table (`sort_field`, `sort_direction`, `updated_at`) for the persisted sort
+preference
 
 **Testing**: Jest + Supertest (backend, incl. integration tests against real
 Postgres), Vitest + React Testing Library (frontend) — existing tooling,
@@ -59,7 +63,10 @@ system-managed and not user-settable via the API; Radix primitives must not
 duplicate or bypass the shared Zod validation rules (Zod remains the single
 source of truth per Code Quality); sort field (`createdAt` | `updatedAt` |
 `completedAt` | `title`) and direction (`asc` | `desc`) are named union types,
-not inline string literals, per Code Quality's constants/naming requirements
+not inline string literals, per Code Quality's constants/naming requirements;
+the `settings` table holds exactly one shared row (no per-user scoping, no
+accounts) and `GET /settings` is fetched in parallel with `GET /todos` on
+load, not sequentially, to avoid delaying first paint
 
 **Scale/Scope**: Same as the base app — one user, low hundreds of todo rows
 
@@ -70,9 +77,9 @@ not inline string literals, per Code Quality's constants/naming requirements
 | Principle | Status | Notes |
 |---|---|---|
 | I. Code Quality | ⚠ Action required, no violation | Radix primitives provide markup/ARIA only; `Form.Message` validity is driven by the existing shared `createTodoSchema`/`updateTodoSchema` via custom matchers, not a second validation system. The new `completed_at` column ships with its migration in the same change. Dead code from the `features/todos` → kind-based move (old files, stale imports) MUST be deleted, not left behind. Sort field/direction values MUST be a named `SortField`/`SortDirection` union type in `types/sort.ts`, not inline string literals repeated across components. |
-| II. Testing Standards | ⚠ Action required, no violation | Existing Vitest specs query native `<input>`/`<select>` roles that change shape under Radix; Phase 1/2 must update those queries (still by accessible role/label, per Testing Standards' UX-alignment) rather than skip coverage. New Jest/Supertest integration tests cover `completed_at` being set/cleared on real Postgres. |
-| III. User Experience Consistency | ✅ Pass | Radix's built-in keyboard/ARIA handling directly supports the "keyboard-accessible, correct semantic roles" requirement. Grouped sections keep one consistent interaction pattern for complete/edit/delete; loading/empty/error states are unchanged from the base app. |
-| IV. Performance Requirements | ⚠ Action required, no violation | Sorting/grouping must be memoized (`useMemo`) so they don't re-run on unrelated re-renders. A new index on `completed_at` supports the "Date Completed" sort without a full-table scan as data grows. |
+| II. Testing Standards | ⚠ Action required, no violation | Existing Vitest specs query native `<input>`/`<select>` roles that change shape under Radix; Phase 1/2 must update those queries (still by accessible role/label, per Testing Standards' UX-alignment) rather than skip coverage. New Jest/Supertest integration tests cover `completed_at` being set/cleared on real Postgres, plus `GET/PUT /settings` persisting and defaulting correctly on real Postgres. |
+| III. User Experience Consistency | ⚠ Action required, no violation | Radix's built-in keyboard/ARIA handling directly supports the "keyboard-accessible, correct semantic roles" requirement. Grouped sections keep one consistent interaction pattern for complete/edit/delete; loading/empty/error states are unchanged from the base app. A failed/slow `GET /settings` MUST fail open to the documented defaults (FR-021), not show an error state, so one more network call doesn't introduce a new failure mode the base app didn't have. |
+| IV. Performance Requirements | ⚠ Action required, no violation | Sorting/grouping must be memoized (`useMemo`) so they don't re-run on unrelated re-renders. A new index on `completed_at` supports the "Date Completed" sort without a full-table scan as data grows. `GET /settings` MUST be fetched in parallel with `GET /todos`, not sequentially, so the added round trip doesn't push out Largest Contentful Paint. |
 | V. Frontend Architecture & Reusability | ⚠ Action required, no violation | Current `ui/src/features/todos/*` is feature-based, not kind-based, and `useTodos` issues `fetch` calls directly instead of going through a service layer — both are gaps against this principle (added v1.2.0). Phase 1 design closes both by introducing `services/todosApi.ts` and moving files into `components/`, `hooks/`, `utilities/`, `types/`. |
 
 No principle is violated; all "action required" items are design decisions
@@ -81,11 +88,12 @@ violation, but the new Radix dependencies are documented there for
 transparency since they are a net-new addition to the stack described in
 Additional Constraints.
 
-**Security note**: The `completed_at` column requires a Prisma schema
-migration. Per `CLAUDE.md`'s enforced Security Gate, any Prisma
-schema/migration change must be reviewed by the `security-review` subagent
-before the implementation turn ends — this is hook-enforced, not optional,
-and applies regardless of how small the column addition is.
+**Security note**: The `completed_at` column and the new `settings` table
+both require Prisma schema migrations. Per `CLAUDE.md`'s enforced Security
+Gate, any Prisma schema/migration change must be reviewed by the
+`security-review` subagent before the implementation turn ends — this is
+hook-enforced, not optional, and applies regardless of how small either
+change is.
 
 **Post-Phase 1 re-check**: All five "action required" items are resolved by
 the design artifacts below and are now ✅ Pass:
@@ -95,9 +103,13 @@ the design artifacts below and are now ✅ Pass:
   Project Structure section below leaves no `features/todos` remnant.
 - *Testing Standards*: `research.md` §2 documents querying Radix output by
   ARIA role/label (Radix's stated design goal) so existing coverage patterns
-  carry over unchanged; `quickstart.md` names the updated test files.
+  carry over unchanged; `quickstart.md` names the updated test files,
+  including the new `settings.e2e-spec.ts`.
+- *User Experience Consistency*: `research.md` §11 defines the fail-open
+  behavior for a failed/slow `GET /settings` call.
 - *Performance Requirements*: `research.md` §4 fixes the memoization
-  boundary and the `completed_at` index.
+  boundary and the `completed_at` index; `research.md` §11 also fixes the
+  parallel-fetch requirement for `GET /settings`.
 - *Frontend Architecture & Reusability*: `research.md` §5 and the Project
   Structure section define the kind-based layout and the new
   `services/todosApi.ts` module.
@@ -123,14 +135,20 @@ specs/002-todo-grouping-sorting/
 ```text
 api/                                   # NestJS backend (existing, extended)
 ├── prisma/
-│   └── schema.prisma                  # add nullable `completed_at` + index
+│   └── schema.prisma                  # add nullable `completed_at` + index; add `settings` table
 ├── src/
-│   └── todos/
-│       ├── todos.controller.ts        # unchanged surface (still 4 routes)
-│       ├── todos.service.ts           # sets/clears completed_at on isCompleted change
-│       └── todos.service.spec.ts      # new cases for completed_at
+│   ├── todos/
+│   │   ├── todos.controller.ts        # unchanged surface (still 4 routes)
+│   │   ├── todos.service.ts           # sets/clears completed_at on isCompleted change
+│   │   └── todos.service.spec.ts      # new cases for completed_at
+│   └── settings/
+│       ├── settings.controller.ts     # NEW — GET /settings, PUT /settings
+│       ├── settings.service.ts        # NEW — reads/upserts the single settings row
+│       ├── settings.module.ts         # NEW
+│       └── settings.service.spec.ts   # NEW
 └── test/
-    └── todos.e2e-spec.ts              # new case: completing/uncompleting sets/clears completed_at
+    ├── todos.e2e-spec.ts              # new case: completing/uncompleting sets/clears completed_at
+    └── settings.e2e-spec.ts           # NEW — persistence + default-fallback against real Postgres
 
 ui/                                     # React + Vite frontend (reorganized)
 ├── src/
@@ -141,9 +159,11 @@ ui/                                     # React + Vite frontend (reorganized)
 │   │   ├── TodoList.tsx                # moved + renders active/Completed sections
 │   │   └── SortControl.tsx             # NEW — @radix-ui/react-select sort dropdown
 │   ├── hooks/
-│   │   └── useTodos.ts                 # moved; delegates I/O to services/todosApi
+│   │   ├── useTodos.ts                 # moved; delegates I/O to services/todosApi
+│   │   └── useSortPreference.ts        # NEW — loads/saves sort field+direction via services/settingsApi
 │   ├── services/
-│   │   └── todosApi.ts                 # NEW — centralizes all `fetch` calls (Constitution V)
+│   │   ├── todosApi.ts                 # NEW — centralizes all todo `fetch` calls (Constitution V)
+│   │   └── settingsApi.ts              # NEW — getSettings/updateSettings `fetch` calls
 │   ├── utilities/
 │   │   ├── todoGrouping.ts             # NEW — splits active vs. completed
 │   │   ├── todoSort.ts                 # NEW — sorts by created/updated/completed/title, asc/desc
@@ -156,7 +176,8 @@ ui/                                     # React + Vite frontend (reorganized)
 
 shared/                                 # existing package
 └── src/
-    └── todo.schema.ts                  # add `completedAt` to `todoSchema` (response-only)
+    ├── todo.schema.ts                  # add `completedAt` to `todoSchema` (response-only)
+    └── settings.schema.ts              # NEW — sortFieldSchema, sortDirectionSchema, settingsSchema
 ```
 
 **Structure Decision**: Keep the three existing workspace packages

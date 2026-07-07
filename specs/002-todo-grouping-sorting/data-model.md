@@ -47,12 +47,43 @@ These are computed from the `Todo[]` list on every render (memoized — see
   reverse of ascending for the same field, including tie order
   (`research.md` §9).
 
-## New types: SortField & SortDirection (frontend-only)
+## Entity: Settings (NEW)
+
+A single-row table persisting the app-wide sort preference so it survives a
+page reload (FR-020–FR-022; `research.md` §10).
+
+| Field                            | Type      | Required | Notes |
+| --------------------------------- | --------- | -------- | ----- |
+| `id`                               | integer   | fixed    | Always `1`; enforced by upserting on this id, not by a DB constraint — there is exactly one row |
+| `sortField` (`sort_field`)         | string    | yes, default `"createdAt"` | One of `createdAt`, `updatedAt`, `completedAt`, `title` — validated by the shared `sortFieldSchema` enum |
+| `sortDirection` (`sort_direction`) | string    | yes, default `"desc"`      | One of `asc`, `desc` — validated by the shared `sortDirectionSchema` enum |
+| `updatedAt` (`updated_at`)         | timestamp | generated | Refreshed on every upsert |
+
+### Validation rules
+
+`sortField` and `sortDirection` are always written together (never
+independently) via the shared `settingsSchema`, so the persisted pair can
+never represent a field paired with a direction that wasn't its explicit
+choice (FR-018, FR-022).
+
+### State transitions
+
+```text
+[no row / defaults]  --(user changes sort field or direction)-->  [row with chosen field+direction]
+[row with field A/direction X] --(user changes field or direction)--> [row upserted with new field/direction]
+```
+
+There is no delete; the row (once created) is only ever upserted with a new
+`sortField`/`sortDirection` pair.
+
+## Types: SortField & SortDirection (shared frontend/backend shapes)
 
 - **SortField**: `'createdAt' | 'updatedAt' | 'completedAt' | 'title'` — the
   union of values the sort control can be set to; consumed by
-  `utilities/todoSort.ts` and `components/SortControl.tsx`. Not persisted.
-- **SortDirection**: `'asc' | 'desc'`. Not persisted.
+  `utilities/todoSort.ts`, `components/SortControl.tsx`, and (as
+  `sortFieldSchema`) the `Settings` entity above.
+- **SortDirection**: `'asc' | 'desc'`; also validated as `sortDirectionSchema`
+  for the `Settings` entity.
 - **DEFAULT_DIRECTION**: a `Record<SortField, SortDirection>` constant — one
   default direction per field (`createdAt`/`updatedAt`/`completedAt` → `desc`,
   `title` → `asc`, per `spec.md`'s Assumptions). Selecting a field applies

@@ -198,3 +198,70 @@ writing two comparators per field.
   rejected per spec Assumptions — adds state and a "which direction was
   Title last on" question the spec explicitly avoids by defining one default
   per field.
+
+## 10. Persisting the sort preference: a dedicated `settings` resource
+
+**Decision**: Add a new Prisma model `settings` with a single, fixed-id row
+(`id = 1`, enforced at the application layer via upsert-by-id rather than a
+DB constraint), columns `sort_field` and `sort_direction` (plain strings,
+validated by the shared `sortFieldSchema`/`sortDirectionSchema` Zod enums —
+same "Zod is the single source of truth" pattern as `todos`), plus
+`updated_at`. Expose it as `GET /settings` (returns the current row, or the
+documented defaults if no row exists yet) and `PUT /settings` (upserts both
+`sortField` and `sortDirection` together, never independently).
+
+**Rationale**: FR-020–FR-022 require the *currently selected* sort field and
+direction to survive a reload. A dedicated single-row resource is the
+simplest shape that satisfies this: no per-user scoping is needed (the app
+has one shared todo list and no accounts, per existing Assumptions), and a
+full-replace `PUT` avoids the ambiguity of a partial update leaving field and
+direction out of sync (FR-018 ties them together whenever the field changes).
+
+**Alternatives considered**:
+
+- *Generic key-value `settings(key, value)` table*: rejected as premature
+  generalization (YAGNI) — there is exactly one setting today; a typed
+  `sort_field`/`sort_direction` pair is simpler to validate and query than a
+  serialized blob, and the constitution's Code Quality principle favors
+  explicit, well-named fields over stringly-typed generic storage.
+- *Store the preference in browser `localStorage` instead of the database*:
+  rejected — the feature explicitly directs persistence "using a new
+  settings table in the database," and `localStorage` would not satisfy
+  that (it also wouldn't survive a different browser/device, which a shared
+  single-list app arguably should support).
+- *Fold the setting into the existing `todos` table or a per-todo field*:
+  rejected — this is an app-wide preference unrelated to any individual
+  todo; conflating the two would violate the single-responsibility guidance
+  in Code Quality.
+- *`PATCH /settings` with independently-optional fields*: rejected — FR-018
+  requires field and direction to change together (new field ⇒ that field's
+  default direction), so a partial-update endpoint would allow a caller to
+  put them out of sync; a full-replace `PUT` makes that state unrepresentable.
+
+## 11. Loading the settings preference without blocking or racing the todo list
+
+**Decision**: `TodosPage` fetches `GET /todos` and `GET /settings` in
+parallel (e.g., both kicked off in the same effect, not one awaiting the
+other). While `GET /settings` is in flight or if it fails, the sort control
+uses the documented per-field defaults (`DEFAULT_DIRECTION`, `createdAt` as
+the default field) exactly as if no preference had ever been saved — there
+is no dedicated loading or error state for settings.
+
+**Rationale**: FR-021 already requires falling back to defaults when no
+preference exists or it can't be read, so a failed/slow settings fetch is
+handled by the same fallback path rather than a new error state — this keeps
+User Experience Consistency intact (no new failure mode introduced) and
+Performance Requirements intact (fetching in parallel means the extra
+request cannot push out Largest Contentful Paint the way a sequential
+`await getSettings()` before `await listTodos()` would).
+
+**Alternatives considered**:
+
+- *Block rendering the todo list until `GET /settings` resolves*: rejected —
+  adds a second network round trip to the critical rendering path for a
+  preference that has a well-defined default; directly works against the
+  Performance Requirements principle.
+- *Surface a distinct error state when `GET /settings` fails*: rejected —
+  over-specifies a failure the user can't act on; falling back to a
+  reasonable default is strictly better UX than an error banner for a
+  non-critical preference.
