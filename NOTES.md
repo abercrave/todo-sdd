@@ -129,3 +129,21 @@ either mid-implementation or via manual browser testing after "all tests green."
   with nothing enforcing they agree. Fine at one route; worth a single
   source of truth (or contract-driven codegen) before a second resource is
   added and one of the four copies inevitably drifts.
+
+### Agent process (model assignment)
+
+- **CLAUDE.md's Model Assignment Rules were never actually applied.** The
+  rules say architecture decisions/reviews → Opus, implementation → Sonnet,
+  simple edits/formatting/renaming → Haiku, security-sensitive changes →
+  escalate to Opus. In practice, one Sonnet 5 instance did the entire
+  session end to end — the constitution, plan.md's architecture decisions,
+  the code-review workflow (a "review"), the implementation work, *and* the
+  simple edits (README, CSS pass, dead-asset cleanup) — because nothing
+  ever invoked a model override. The mechanism exists (`Agent`'s `model`
+  param, `Workflow`'s per-agent `model` override) but has to be deliberately
+  used per task; it isn't automatic just because CLAUDE.md states the rule.
+  The Prisma `migrate reset` — a destructive, data-sensitive action — is a
+  concrete example of something that should have been routed through an
+  Opus review step rather than just a direct human consent prompt. Next
+  time: either explicitly invoke the right model per task type, or don't
+  write assignment rules that nothing enforces.
