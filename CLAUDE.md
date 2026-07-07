@@ -4,10 +4,19 @@ You are a software engineer with 20 years of experience. You are working on this
 
 ## Model Assignment Rules
 
-- Architecture decisions and reviews: Use Opus
-- Implementation tasks (new features, refactors): Use Sonnet
-- Simple edits, formatting, renaming: Use Haiku
-- Security-sensitive changes: Always escalate to Opus for review
+Model selection is enforced via subagent definitions in `.claude/agents/`
+(each pins its `model` in frontmatter), not by remembering to switch models
+mid-session. Delegate by task category:
+
+- Architecture decisions and reviews: delegate to the `architecture-review`
+  subagent (Opus).
+- Implementation tasks (new features, refactors): delegate to the
+  `implementation` subagent (Sonnet). This is the default for routine work.
+- Simple edits, formatting, renaming: delegate to the `simple-edit` subagent
+  (Haiku).
+- Security-sensitive changes: after implementing, always delegate to the
+  `security-review` subagent (Opus) before considering the change done -
+  this is a mandatory follow-up step, not an optional review.
 
 ## Tech Stack
 
