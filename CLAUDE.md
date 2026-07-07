@@ -29,28 +29,47 @@ You are a software engineer with 20 years of experience. You are working on this
 
 ## Model Assignment Rules
 
-These rules are backstopped by a non-blocking `PreToolUse` hook in
-`.claude/settings.json` (checked into the repo, so every teammate gets it
-automatically). Whenever an `Edit` or `Write` runs, the hook injects a
-reminder to route the change through the appropriate subagent above. It is a
-nudge, not a hard gate — the edit still proceeds — so the rules above remain
-the source of truth for which subagent handles which task category.
+There are two tiers here: **guidance** (delegate when it pays off) and one
+**enforced** rule (the security gate). Don't confuse them — the first is a
+judgment call, the second is not.
 
-Delegate by task category:
+### Guidance — delegate when context-isolation pays off
 
-- Architecture decisions and reviews: delegate to the `architecture-review`
-  subagent (Opus).
-- Implementation tasks (new features, refactors): delegate to the
-  `implementation` subagent (Sonnet). This is the default for routine work.
-- Simple edits, formatting, renaming: delegate to the `simple-edit` subagent
-  (Haiku).
-- Security-sensitive changes: after implementing, always delegate to the
-  `security-review` subagent (Opus) before considering the change done -
-  this is a mandatory follow-up step, not an optional review.
+Routing work to a subagent only helps when the task is large or exploratory
+enough that isolating it in its own context window saves more than the
+round-trip costs. Use that as the threshold:
 
-These rules are backstopped by a non-blocking `PreToolUse` hook in
-`.claude/settings.json` (checked into the repo, so every teammate gets it
-automatically). Whenever an `Edit` or `Write` runs, the hook injects a
-reminder to route the change through the appropriate subagent above. It is a
-nudge, not a hard gate — the edit still proceeds — so the rules above remain
-the source of truth for which subagent handles which task category.
+- **Multi-file features and refactors** → `implementation` subagent (Sonnet).
+- **Design/architecture decisions and reviews** → `architecture-review`
+  subagent (Opus). (These usually happen in conversation *before* any edit, so
+  no edit-time hook can trigger them — it's on you to reach for it.)
+- **Small, in-context edits** (a typo, a link, renaming in one file) → just
+  make the edit directly. Spawning a subagent for a one-line change costs more
+  than it saves; the `simple-edit` (Haiku) subagent is only worth it for a
+  mechanical change spread across many files.
+
+This tier is advisory. A non-blocking `PreToolUse` hook in
+`.claude/settings.json` injects a reminder on each `Edit`/`Write`, but it is a
+nudge and the edit proceeds regardless. Advisory is the *right* tool here,
+because "is this big enough to delegate?" is a judgment no hook can make from a
+file path.
+
+### Enforced — the security gate
+
+Any change touching a security-sensitive path — Prisma schema/migrations,
+`shared/` Zod validation schemas, auth code, secrets/env, or dependency
+manifests (`package.json`/`pnpm-lock.yaml`) — **must** be reviewed by the
+`security-review` subagent (Opus) before the turn ends. This is not left to
+judgment: a three-part hook chain enforces it deterministically
+(`.claude/hooks/security-gate/`):
+
+1. **PostToolUse** records a "review owed" marker when a sensitive path is
+   edited (by the main session or any subagent).
+2. **SubagentStop** clears the marker when the `security-review` subagent
+   finishes.
+3. **Stop** blocks the turn from ending while the marker exists.
+
+So a security-sensitive change literally cannot be finished without the review
+running — independent of which teammate is driving or which model is active.
+The `security-review` subagent has `Edit`/`Write` disallowed, so it reviews
+without being able to trip its own gate.

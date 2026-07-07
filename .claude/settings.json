@@ -6,8 +6,41 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat >/dev/null 2>&1; printf %s '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Reminder (CLAUDE.md Model Assignment Rules): route edits to the right subagent by task category rather than editing directly in the main session — simple-edit (Haiku) for mechanical edits (formatting, renaming, typos, adding links), implementation (Sonnet) for features and refactors, architecture-review (Opus) for design decisions, and security-review (Opus) as a mandatory follow-up after any security-sensitive change. If this is a mechanical edit being made directly, delegate it to a subagent next time. Non-blocking reminder; this edit proceeds.\"}}'",
+            "command": "cat >/dev/null 2>&1; printf %s '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Reminder (CLAUDE.md Model Assignment Rules, advisory): delegate to a subagent when context-isolation pays off — implementation (Sonnet) for multi-file features/refactors, architecture-review (Opus) for design decisions. For small in-context edits (a typo, a link, a one-file rename), just edit directly; spawning a subagent costs more than it saves. This is guidance, not a gate. The security-review requirement is separately ENFORCED by the Stop hook, not by this reminder.\"}}'",
             "statusMessage": "Checking edit-delegation policy"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/security-gate/mark-review-owed.sh\"",
+            "statusMessage": "security-gate: checking touched paths"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/security-gate/clear-review-owed.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/security-gate/gate-stop.sh\"",
+            "statusMessage": "security-gate: verifying review owed"
           }
         ]
       }

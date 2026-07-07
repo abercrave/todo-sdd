@@ -49,6 +49,9 @@ coverage
 .temp
 .tmp
 
+# security-gate transient state (see .claude/hooks/security-gate/)
+.claude/.security-review-owed
+
 # Runtime data
 pids
 *.pid
