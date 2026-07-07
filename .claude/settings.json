@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat >/dev/null 2>&1; printf %s '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Reminder (CLAUDE.md Model Assignment Rules): route edits to the right subagent by task category rather than editing directly in the main session — simple-edit (Haiku) for mechanical edits (formatting, renaming, typos, adding links), implementation (Sonnet) for features and refactors, architecture-review (Opus) for design decisions, and security-review (Opus) as a mandatory follow-up after any security-sensitive change. If this is a mechanical edit being made directly, delegate it to a subagent next time. Non-blocking reminder; this edit proceeds.\"}}'",
+            "statusMessage": "Checking edit-delegation policy"
+          }
+        ]
+      }
+    ]
+  }
+}
