@@ -31,8 +31,8 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 **Purpose**: Add the new frontend dependency and target directory structure before any file moves happen.
 
-- [ ] T001 Add `@radix-ui/react-form`, `@radix-ui/react-select`, `@radix-ui/react-checkbox` to `ui/package.json` dependencies and run `pnpm install`
-- [ ] T002 [P] Create empty `ui/src/components/`, `ui/src/hooks/`, `ui/src/services/`, `ui/src/utilities/`, `ui/src/types/` directories
+- [X] T001 Add `@radix-ui/react-form`, `@radix-ui/react-select`, `@radix-ui/react-checkbox` to `ui/package.json` dependencies and run `pnpm install`
+- [X] T002 [P] Create empty `ui/src/components/`, `ui/src/hooks/`, `ui/src/services/`, `ui/src/utilities/`, `ui/src/types/` directories
 
 **Checkpoint**: Dependencies installed, target directory structure exists.
 
