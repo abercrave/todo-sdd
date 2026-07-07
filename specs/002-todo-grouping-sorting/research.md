@@ -4,6 +4,11 @@ No `[NEEDS CLARIFICATION]` markers remained in the Technical Context, so this
 research resolves the concrete design/best-practice decisions needed before
 Phase 1.
 
+**Note**: An earlier iteration of this research included decisions for a
+`completed_at` Prisma column and a `Date Completed` sort field. Both were
+removed after the spec dropped that sort field (see spec.md's amendment log).
+Section numbers below have been renumbered accordingly.
+
 ## 1. Wiring Radix's `Form` primitive to the existing shared Zod schemas
 
 **Decision**: Use `@radix-ui/react-form`'s `Form.Field` / `Form.Message`
@@ -109,53 +114,15 @@ the base app was built with `fetch` inline in the hook.
   the new constitution principle calls out; this feature already touches
   every file involved, making now the lowest-cost time to fix it.
 
-## 6. Prisma schema addition for `completed_at`
-
-**Decision**: Add a nullable `completed_at DateTime? @db.Timestamptz(6)`
-column to the `todos` model, with an index (`idx_todos_completed_at`).
-`TodosService.update` sets it to the current time when `isCompleted`
-transitions to `true`, and clears it to `null` when it transitions to
-`false`.
-
-**Rationale**: FR-007/FR-008 require sorting the Completed section by
-completion time and require the system to record that time — it does not
-exist on the current schema. The index supports that sort without a
-full-table scan as the constitution's Performance Requirements principle
-requires for date-based lookups.
-
-**Alternatives considered**:
-
-- *Derive "completed date" from `updated_at`*: rejected — `updated_at`
-  changes on *any* field edit, not just completion, so it would silently
-  give the wrong sort order the moment a completed todo's title is edited
-  after completion.
-
-## 7. API contract changes
-
-**Decision**: Add `completedAt` (nullable, same shape as `dueAt`/`createdAt`)
-to the `Todo` response shape only — it is system-managed like `createdAt`/
-`updatedAt` and is never accepted in `createTodoSchema` or
-`updateTodoSchema` request bodies. No new endpoints or query parameters.
-
-**Rationale**: Keeps the write contract unchanged (still `PATCH { isCompleted
-}` to trigger completion, per the base app's existing pattern) while
-exposing the one new read field the UI needs for sorting/grouping.
-
-**Alternatives considered**:
-
-- *Accept a client-supplied `completedAt` on `PATCH`*: rejected — completion
-  time must be authoritative server time, not client-supplied, to keep sort
-  order trustworthy.
-
-## 8. Adding "Title" as a sort field
+## 6. Adding "Title" as a sort field
 
 **Decision**: `todoSort.ts` gains a `title` case using
 `String.prototype.localeCompare` with `{ sensitivity: 'base' }` (case- and
-accent-insensitive) as the comparator; `SortField` becomes `'createdAt' |
-'updatedAt' | 'completedAt' | 'title'` in `types/sort.ts`, and `SortControl`
-adds a fourth option.
+accent-insensitive) as the comparator; `SortField` is `'createdAt' |
+'updatedAt' | 'title'` in `types/sort.ts`, and `SortControl` offers all
+three as options.
 
-**Rationale**: FR-014/FR-015 require alphabetical, case-insensitive sorting.
+**Rationale**: FR-012/FR-013 require alphabetical, case-insensitive sorting.
 `localeCompare` with `sensitivity: 'base'` gives correct case-insensitive
 ordering without hand-rolling `toLowerCase()` comparisons, which mishandle
 locale-specific casing rules.
@@ -169,7 +136,7 @@ locale-specific casing rules.
 - *Natural/numeric-aware sort ("Item 2" before "Item 10")*: rejected per
   spec Assumptions — out of scope for this iteration.
 
-## 9. Sort direction and the "descending mirrors ascending, including ties" requirement
+## 7. Sort direction and the "descending mirrors ascending, including ties" requirement
 
 **Decision**: `sortTodos(todos, field, direction)` always sorts ascending
 first with a stable comparator, then, if `direction === 'desc'`, reverses the
@@ -177,21 +144,21 @@ resulting array in place — it does **not** negate the comparator. Each
 `SortField` maps to its own default `SortDirection` via a
 `DEFAULT_DIRECTION: Record<SortField, SortDirection>` constant in
 `types/sort.ts`; selecting a new field looks up that field's default rather
-than reusing whatever direction was active for the previous field (FR-018,
-FR-019).
+than reusing whatever direction was active for the previous field (FR-016,
+FR-017).
 
-**Rationale**: FR-017 and the spec's tie edge case require descending to be
+**Rationale**: FR-015 and the spec's tie edge case require descending to be
 the *exact reverse* of ascending, including how tied items are ordered.
 Negating a comparator (`-compare(a, b)`) keeps a stable sort's tie-order
 identical in both directions (ties stay in original relative order either
 way), which does not satisfy that requirement. Sorting ascending once and
-reversing the array when needed both satisfies FR-017 exactly and avoids
+reversing the array when needed both satisfies FR-015 exactly and avoids
 writing two comparators per field.
 
 **Alternatives considered**:
 
 - *Negate the comparator for descending*: rejected — does not mirror tie
-  order as FR-017 requires (see Rationale).
+  order as FR-015 requires (see Rationale).
 - *A separate descending comparator per field*: rejected — doubles the
   comparator surface for no behavioral difference from sort-then-reverse.
 - *Remember a per-field last-used direction across field switches*:
@@ -199,7 +166,7 @@ writing two comparators per field.
   Title last on" question the spec explicitly avoids by defining one default
   per field.
 
-## 10. Persisting the sort preference: a dedicated `settings` resource
+## 8. Persisting the sort preference: a dedicated `settings` resource
 
 **Decision**: Add a new Prisma model `settings` with a single, fixed-id row
 (`id = 1`, enforced at the application layer via upsert-by-id rather than a
@@ -208,14 +175,16 @@ validated by the shared `sortFieldSchema`/`sortDirectionSchema` Zod enums —
 same "Zod is the single source of truth" pattern as `todos`), plus
 `updated_at`. Expose it as `GET /settings` (returns the current row, or the
 documented defaults if no row exists yet) and `PUT /settings` (upserts both
-`sortField` and `sortDirection` together, never independently).
+`sortField` and `sortDirection` together, never independently). Valid values
+for `sort_field` are `createdAt`, `updatedAt`, and `title` — the same three
+fields the UI's sort control offers, no more.
 
-**Rationale**: FR-020–FR-022 require the *currently selected* sort field and
+**Rationale**: FR-018–FR-020 require the *currently selected* sort field and
 direction to survive a reload. A dedicated single-row resource is the
 simplest shape that satisfies this: no per-user scoping is needed (the app
 has one shared todo list and no accounts, per existing Assumptions), and a
 full-replace `PUT` avoids the ambiguity of a partial update leaving field and
-direction out of sync (FR-018 ties them together whenever the field changes).
+direction out of sync (FR-016 ties them together whenever the field changes).
 
 **Alternatives considered**:
 
@@ -233,21 +202,24 @@ direction out of sync (FR-018 ties them together whenever the field changes).
   rejected — this is an app-wide preference unrelated to any individual
   todo; conflating the two would violate the single-responsibility guidance
   in Code Quality.
-- *`PATCH /settings` with independently-optional fields*: rejected — FR-018
+- *`PATCH /settings` with independently-optional fields*: rejected — FR-016
   requires field and direction to change together (new field ⇒ that field's
   default direction), so a partial-update endpoint would allow a caller to
   put them out of sync; a full-replace `PUT` makes that state unrepresentable.
 
-## 11. Loading the settings preference without blocking or racing the todo list
+## 9. Loading the settings preference without blocking or racing the todo list
 
 **Decision**: `TodosPage` fetches `GET /todos` and `GET /settings` in
 parallel (e.g., both kicked off in the same effect, not one awaiting the
 other). While `GET /settings` is in flight or if it fails, the sort control
 uses the documented per-field defaults (`DEFAULT_DIRECTION`, `createdAt` as
 the default field) exactly as if no preference had ever been saved — there
-is no dedicated loading or error state for settings.
+is no dedicated loading or error state for settings. The same fail-open
+principle applies to a failed *save*: a rejected `PUT /settings` still
+applies the change to the current view and is retried implicitly on the
+next change, with no error surfaced (FR-021).
 
-**Rationale**: FR-021 already requires falling back to defaults when no
+**Rationale**: FR-019 already requires falling back to defaults when no
 preference exists or it can't be read, so a failed/slow settings fetch is
 handled by the same fallback path rather than a new error state — this keeps
 User Experience Consistency intact (no new failure mode introduced) and
@@ -261,7 +233,7 @@ request cannot push out Largest Contentful Paint the way a sequential
   adds a second network round trip to the critical rendering path for a
   preference that has a well-defined default; directly works against the
   Performance Requirements principle.
-- *Surface a distinct error state when `GET /settings` fails*: rejected —
-  over-specifies a failure the user can't act on; falling back to a
-  reasonable default is strictly better UX than an error banner for a
-  non-critical preference.
+- *Surface a distinct error state when `GET /settings` fails, or when a save
+  fails*: rejected — over-specifies a failure the user can't act on;
+  falling back to / staying on a reasonable value is strictly better UX than
+  an error banner for a non-critical preference.

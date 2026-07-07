@@ -15,10 +15,10 @@ schemas in `shared/src/settings.schema.ts`.
 }
 ```
 
-- `sortField`: one of `"createdAt" | "updatedAt" | "completedAt" | "title"`.
+- `sortField`: one of `"createdAt" | "updatedAt" | "title"`.
 - `sortDirection`: one of `"asc" | "desc"`.
 
-## `GET /settings` — Read the current sort preference (FR-020, FR-021; User Story 5)
+## `GET /settings` — Read the current sort preference (FR-018, FR-019; User Story 5)
 
 **Responses**:
 
@@ -26,7 +26,7 @@ schemas in `shared/src/settings.schema.ts`.
   been saved, returns the documented defaults (`sortField: "createdAt"`,
   `sortDirection: "desc"`) without requiring a row to exist yet.
 
-## `PUT /settings` — Save the current sort preference (FR-020, FR-022; User Story 5)
+## `PUT /settings` — Save the current sort preference (FR-018, FR-020; User Story 5)
 
 **Request body** (`settingsSchema`, both fields required together — never a
 partial update):
@@ -52,7 +52,9 @@ Consistent with the base app's `todos` contract: every endpoint returns a
 
 ## Client fallback behavior (not part of the wire contract)
 
-Per `research.md` §11, the client treats a failed or slow `GET /settings`
+Per `research.md` §9, the client treats a failed or slow `GET /settings`
 the same as "no preference saved" — it falls back to the documented defaults
-rather than surfacing an error state. This is a client-side behavior, not a
-server response shape.
+rather than surfacing an error state. A failed `PUT /settings` (e.g., the
+user changed the sort while offline) is handled the same way: the change
+still applies locally and is not surfaced as an error (FR-021). These are
+client-side behaviors, not server response shapes.
