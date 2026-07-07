@@ -1,19 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: [TEMPLATE] → 1.0.0 (initial ratification)
-- Modified principles: n/a (first adoption; template placeholders replaced)
-- Added sections:
-  - Core Principles: I. Code Quality, II. Testing Standards, III. User Experience Consistency, IV. Performance Requirements
-  - Additional Constraints (technology stack, from CLAUDE.md)
-  - Development Workflow & Quality Gates
-  - Governance
-- Removed sections: none (template's optional 5th principle slot intentionally
-  not used — 4 principles were explicitly requested)
+- Version change: 1.0.0 → 1.1.0
+- Modified principles:
+  - I. Code Quality — added explicit linting/formatting tooling requirement
+    (ESLint on backend; Oxlint + Oxfmt on frontend)
+- Added sections: none (existing sections expanded, not added)
+- Removed sections: none
 - Templates requiring updates:
   - ✅ .specify/templates/plan-template.md — Constitution Check gate reads principles
-    dynamically; no hardcoded principle names to update
+    dynamically; no hardcoded tooling names to update
   - ✅ .specify/templates/spec-template.md — generic, no principle-specific references
-  - ✅ .specify/templates/tasks-template.md — generic, no principle-specific references
+  - ✅ .specify/templates/tasks-template.md — generic task "Configure linting and
+    formatting tools" already tool-agnostic; no change needed
   - ✅ .specify/templates/checklist-template.md — generic, no principle-specific references
   - ⚠ No .specify/templates/commands/*.md directory present — nothing to update
 - Follow-up TODOs: none
@@ -29,8 +27,10 @@ TypeScript strict mode is non-negotiable across frontend and backend; `any` and
 implicit-any are forbidden except at explicitly justified, commented boundaries.
 Validation logic (Zod schemas) MUST be defined once and shared between the NestJS
 backend and the React frontend — no duplicated or divergent validation rules.
-All code MUST pass linting and type-checking before merge; these are automated
-gates, not reviewer judgment calls. Every Prisma schema change MUST ship with a
+Backend code MUST pass ESLint with zero errors, and frontend code MUST pass
+Oxlint with zero errors and be formatted with Oxfmt. All code MUST pass
+linting, formatting checks, and type-checking before merge; these are
+automated gates, not reviewer judgment calls. Every Prisma schema change MUST ship with a
 corresponding migration committed alongside the code that depends on it.
 Functions and modules MUST have a single clear responsibility; prefer composing
 small, well-named units over large multi-purpose ones.
@@ -94,10 +94,11 @@ Technology stack is fixed for this project and MUST NOT be substituted without
 a constitution amendment: TypeScript (strict mode) for all application code;
 NestJS for the backend; React + Vite for the frontend; Zod for shared
 frontend/backend validation; PostgreSQL as the database; Prisma as the ORM;
-Vitest for frontend tests and Jest for backend tests. Any new dependency that
-duplicates the responsibility of an existing stack choice (e.g., a second
-validation library, a second ORM) requires explicit justification in the plan's
-Complexity Tracking section.
+Vitest for frontend tests and Jest for backend tests; ESLint for backend
+linting; Oxlint for frontend linting and Oxfmt for frontend formatting. Any
+new dependency that duplicates the responsibility of an existing stack choice
+(e.g., a second validation library, a second ORM, a second linter) requires
+explicit justification in the plan's Complexity Tracking section.
 
 ## Development Workflow & Quality Gates
 
@@ -126,4 +127,4 @@ authoritative source for day-to-day runtime development guidance (tone,
 model-assignment rules, tech stack detail) and MUST stay consistent with this
 constitution.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-06
+**Version**: 1.1.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-07

@@ -13,6 +13,8 @@ A single-user todo application: a [NestJS](https://nestjs.com/) API and a
 - Validation: Zod (shared between frontend and backend, see `shared/`)
 - Database: PostgreSQL, via Prisma
 - Testing: Jest + Supertest (backend), Vitest + React Testing Library (frontend)
+- Linting: Oxlint (frontend), ESLint (backend)
+- Formatting: Oxfmt (frontend), ESLint (backend)
 
 ## Prerequisites
 
