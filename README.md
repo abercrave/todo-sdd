@@ -1,7 +1,9 @@
 # Todo SDD App
 
-A single-user todo application: a NestJS API and a React (Vite) UI sharing
-one set of Zod validation schemas, backed by Postgres via Prisma.
+A single-user todo application: a [NestJS](https://nestjs.com/) API and a
+[React](https://react.dev/) ([Vite](https://vite.dev/)) UI sharing one set of
+[Zod](https://zod.dev/) validation [schemas](https://zod.dev/api), backed by
+[Postgres](https://www.postgresql.org/) via [Prisma](https://www.prisma.io/).
 
 ## Tech Stack
 
