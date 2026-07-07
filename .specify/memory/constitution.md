@@ -1,17 +1,21 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0
+- Version change: 1.1.0 → 1.2.0
 - Modified principles:
-  - I. Code Quality — added explicit linting/formatting tooling requirement
-    (ESLint on backend; Oxlint + Oxfmt on frontend)
-- Added sections: none (existing sections expanded, not added)
+  - I. Code Quality — added dead-code removal, naming conventions, magic-value
+    constants/enums, and backward-compatibility requirements
+  - III. User Experience Consistency — clarified edge-case handling to cover
+    network failures and malformed responses explicitly
+  - IV. Performance Requirements — added React re-render discipline, code
+    splitting, and render-body cleanliness requirements
+- Added sections:
+  - Core Principles: V. Frontend Architecture & Reusability
 - Removed sections: none
 - Templates requiring updates:
   - ✅ .specify/templates/plan-template.md — Constitution Check gate reads principles
-    dynamically; no hardcoded tooling names to update
+    dynamically; no hardcoded principle count/names to update
   - ✅ .specify/templates/spec-template.md — generic, no principle-specific references
-  - ✅ .specify/templates/tasks-template.md — generic task "Configure linting and
-    formatting tools" already tool-agnostic; no change needed
+  - ✅ .specify/templates/tasks-template.md — generic, no principle-specific references
   - ✅ .specify/templates/checklist-template.md — generic, no principle-specific references
   - ⚠ No .specify/templates/commands/*.md directory present — nothing to update
 - Follow-up TODOs: none
@@ -33,12 +37,22 @@ linting, formatting checks, and type-checking before merge; these are
 automated gates, not reviewer judgment calls. Every Prisma schema change MUST ship with a
 corresponding migration committed alongside the code that depends on it.
 Functions and modules MUST have a single clear responsibility; prefer composing
-small, well-named units over large multi-purpose ones.
+small, well-named units over large multi-purpose ones. Dead code — unused
+exports, commented-out blocks, stray `console.log` calls — MUST be deleted,
+not left "for reference." Naming MUST follow consistent casing conventions for
+files, components, and functions, and boolean names MUST be prefixed with
+`is`, `has`, or `should` so intent is unambiguous. Magic numbers and strings
+MUST be extracted into named constants or enums rather than inlined. When
+changing an existing prop, method signature, or exported function, the change
+MUST preserve backward compatibility with existing call sites or update every
+call site in the same change.
 
 **Rationale**: A single-developer, single-user application still accrues
 maintenance cost from type drift and duplicated validation. Enforcing these
 mechanically (compiler, linter, shared schema) prevents defects before review
-rather than relying on manual vigilance.
+rather than relying on manual vigilance. Dead code and inconsistent naming
+impose the same drift cost as type errors even though no tool blocks them by
+default, so they are called out as explicit MUSTs here.
 
 ### II. Testing Standards
 
@@ -63,7 +77,9 @@ The UI MUST follow one consistent interaction pattern for equivalent actions
 (creating, editing, completing, and deleting a todo behave the same way
 everywhere they appear). Loading, empty, and error states MUST be handled
 explicitly for every view — no view may silently show nothing or a raw error.
-Form validation errors MUST surface inline, next to the field they concern,
+This includes network failures and malformed or unexpected API responses,
+which MUST be caught and presented as an actionable error state, never an
+unhandled exception. Form validation errors MUST surface inline, next to the field they concern,
 using the same Zod schema that the backend enforces, so client and server never
 disagree about what is valid. All interactive elements MUST be keyboard-
 accessible and carry correct semantic HTML/ARIA roles.
@@ -82,11 +98,40 @@ full-table scans on the todos table are not acceptable as the data set grows.
 The frontend MUST achieve a Largest Contentful Paint under 2.5s on a throttled
 connection profile and MUST avoid unnecessary re-renders on every keystroke in
 list views. Prisma queries MUST select only the fields a view actually needs
-rather than defaulting to full-record fetches.
+rather than defaulting to full-record fetches. `React.memo`, `useCallback`,
+and `useMemo` MUST be applied where they yield a measurable rendering benefit,
+not reflexively on every component. Routes and heavy components MUST be
+code-split via lazy loading and dynamic imports rather than bundled into the
+initial payload. Render bodies MUST stay free of heavy computation and side
+effects — calculations and side effects belong in helpers, hooks, or
+container components, not inline in JSX.
 
 **Rationale**: Performance budgets set now stay cheap to meet; retrofitting
 them after the schema and UI patterns solidify is far more expensive than
-enforcing them from the first feature onward.
+enforcing them from the first feature onward. Undisciplined re-renders and
+monolithic bundles are the most common ways a small React app becomes
+sluggish, and both are cheap to prevent early and expensive to retrofit.
+
+### V. Frontend Architecture & Reusability
+
+The frontend codebase MUST be organized into dedicated folders by kind
+(components, hooks, services, utilities, types), with related logic kept
+together and the same structure applied consistently across features. Shared
+logic MUST be extracted into custom hooks, helper functions, or reusable
+components rather than duplicated (DRY); before writing new logic, an
+engineer MUST check whether equivalent functionality already exists in the
+codebase or its dependencies. A component MUST handle one responsibility and
+SHOULD stay under 100–200 lines — components that grow beyond this MUST be
+split for clarity and reuse. All API calls MUST be centralized in a service
+layer rather than issued directly from components, so request logic and error
+handling live in one place. Asynchronous logic MUST use async/await or
+Promises with explicit rejection handling, and any subscription, timer, or
+listener started in a `useEffect` MUST be torn down in its cleanup function.
+
+**Rationale**: Consistent structure and enforced reuse keep a growing frontend
+navigable without a style-guide meeting for every PR. Centralizing API calls
+and requiring effect cleanup prevents the duplicated error-handling logic and
+memory leaks that otherwise accumulate silently in component-first codebases.
 
 ## Additional Constraints
 
@@ -103,7 +148,7 @@ explicit justification in the plan's Complexity Tracking section.
 ## Development Workflow & Quality Gates
 
 Every plan produced by `/speckit-plan` MUST pass the Constitution Check gate
-against the four principles above before Phase 0 research begins, and MUST be
+against the five principles above before Phase 0 research begins, and MUST be
 re-checked after Phase 1 design. Model assignment for review depth follows
 CLAUDE.md: architecture decisions and security-sensitive changes always receive
 escalated review. A feature is not "done" until linting, type-checking, and the
@@ -127,4 +172,4 @@ authoritative source for day-to-day runtime development guidance (tone,
 model-assignment rules, tech stack detail) and MUST stay consistent with this
 constitution.
 
-**Version**: 1.1.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-07
+**Version**: 1.2.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-07
