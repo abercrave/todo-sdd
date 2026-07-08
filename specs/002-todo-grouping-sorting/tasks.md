@@ -85,16 +85,16 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Vitest test in `ui/src/utilities/todoSort.test.ts` covering ordering by `createdAt` and `updatedAt`
+- [X] T015 [P] [US2] Vitest test in `ui/src/utilities/todoSort.test.ts` covering ordering by `createdAt` and `updatedAt`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Create `ui/src/types/sort.ts` exporting `SortField = 'createdAt' | 'updatedAt'`
-- [ ] T017 [US2] Create `ui/src/utilities/todoSort.ts` exporting `sortTodos(todos, field): Todo[]` (ascending stable comparator per field; direction is added in User Story 4)
-- [ ] T018 [US2] Create `ui/src/components/SortControl.tsx` using `@radix-ui/react-select`, listing "Date Created" and "Date Last Updated"
-- [ ] T019 [US2] Wire `SortControl` into `ui/src/components/TodosPage.tsx` with sort-field state; apply `todoSort` + `todoGrouping` together via `useMemo` keyed on `[todos, sortField]` (research.md §4) so both sections reorder identically on selection (FR-005, FR-006), defaulting to Date Created, newest-first, when nothing is selected (FR-007)
-- [ ] T020 [P] [US2] Vitest test in `ui/src/components/SortControl.test.tsx` covering the combobox role and each option
-- [ ] T021 [US2] Update `ui/src/components/TodoList.test.tsx` (or `TodosPage.test.tsx`) to cover the default sort order and reordering when a sort option is selected
+- [X] T016 [US2] Create `ui/src/types/sort.ts` exporting `SortField = 'createdAt' | 'updatedAt'`
+- [X] T017 [US2] Create `ui/src/utilities/todoSort.ts` exporting `sortTodos(todos, field): Todo[]` (ascending stable comparator per field; direction is added in User Story 4)
+- [X] T018 [US2] Create `ui/src/components/SortControl.tsx` using `@radix-ui/react-select`, listing "Date Created" and "Date Last Updated"
+- [X] T019 [US2] Wire `SortControl` into `ui/src/components/TodosPage.tsx` with sort-field state; apply `todoSort` + `todoGrouping` together via `useMemo` keyed on `[todos, sortField]` (research.md §4) so both sections reorder identically on selection (FR-005, FR-006), defaulting to Date Created, newest-first, when nothing is selected (FR-007)
+- [X] T020 [P] [US2] Vitest test in `ui/src/components/SortControl.test.tsx` covering the combobox role and each option
+- [X] T021 [US2] Update `ui/src/components/TodoList.test.tsx` (or `TodosPage.test.tsx`) to cover the default sort order and reordering when a sort option is selected
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
 
