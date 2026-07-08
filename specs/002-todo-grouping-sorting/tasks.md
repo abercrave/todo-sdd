@@ -48,9 +48,9 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 - [X] T004 Move `useTodos.ts` from `ui/src/features/todos/` to `ui/src/hooks/useTodos.ts`, updating its imports
 - [X] T005 Create `ui/src/services/todosApi.ts` exporting `listTodos`, `createTodo`, `updateTodo`, `deleteTodo` (the four `fetch` calls moved out of `useTodos.ts`); update `ui/src/hooks/useTodos.ts` to call these instead of using `fetch` directly (research.md §5)
 - [X] T006 Delete the now-empty `ui/src/features/` directory; update `ui/src/App.tsx`'s import to `./components/TodosPage`
-- [ ] T007 Rebuild `ui/src/components/TodoForm.tsx` on `@radix-ui/react-form` (`Form.Root`/`Form.Field`/`Form.Label`/`Form.Control`/`Form.Message`), with `Form.Message` `match` validators calling `createTodoSchema`/`updateTodoSchema` directly — not Radix's native HTML constraint attributes (research.md §1)
-- [ ] T008 [P] Rebuild the complete-toggle checkbox in `ui/src/components/TodoItem.tsx` on `@radix-ui/react-checkbox`
-- [ ] T009 [P] Update `ui/src/components/TodoForm.test.tsx` and `ui/src/components/TodoItem.test.tsx` to query the Radix output by accessible role/label (e.g., `getByRole('textbox', { name: 'Title' })`) instead of tag/CSS-class queries, confirming pre-existing create/edit/toggle behavior still passes (research.md §2)
+- [X] T007 Rebuild `ui/src/components/TodoForm.tsx` on `@radix-ui/react-form` (`Form.Root`/`Form.Field`/`Form.Label`/`Form.Control`/`Form.Message`), with `Form.Message` `match` validators calling `createTodoSchema`/`updateTodoSchema` directly — not Radix's native HTML constraint attributes (research.md §1)
+- [X] T008 [P] Rebuild the complete-toggle checkbox in `ui/src/components/TodoItem.tsx` on `@radix-ui/react-checkbox`
+- [X] T009 [P] Update `ui/src/components/TodoForm.test.tsx` and `ui/src/components/TodoItem.test.tsx` to query the Radix output by accessible role/label (e.g., `getByRole('textbox', { name: 'Title' })`) instead of tag/CSS-class queries, confirming pre-existing create/edit/toggle behavior still passes (research.md §2)
 
 **Checkpoint**: `ui/src` is reorganized, the service layer exists, and existing form elements run on Radix — user story implementation can now begin.
 

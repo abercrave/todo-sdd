@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as Checkbox from '@radix-ui/react-checkbox'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
 import { TodoForm } from './TodoForm'
 
@@ -65,11 +66,13 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
   return (
     <li className={todo.isCompleted ? 'todo-item todo-item-done' : 'todo-item'}>
       <label className="todo-checkbox">
-        <input
-          type="checkbox"
+        <Checkbox.Root
+          className="todo-checkbox-control"
           checked={todo.isCompleted}
-          onChange={() => void handleToggle()}
-        />
+          onCheckedChange={() => void handleToggle()}
+        >
+          <Checkbox.Indicator className="todo-checkbox-indicator">✓</Checkbox.Indicator>
+        </Checkbox.Root>
         <span className="todo-title">{todo.title}</span>
       </label>
 
