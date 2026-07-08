@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { todoListSchema, todoSchema } from 'shared'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
+import { createTodo, deleteTodo, listTodos, toErrorMessage, updateTodo } from '../services/todosApi'
 
 export type TodosStatus = 'loading' | 'error' | 'empty' | 'ready'
 
@@ -13,35 +13,8 @@ export interface UseTodosResult {
   remove: (id: number) => Promise<void>
 }
 
-const API_BASE = '/todos'
-
 function statusForTodos(todos: Todo[]): TodosStatus {
   return todos.length === 0 ? 'empty' : 'ready'
-}
-
-function isZodError(err: unknown): boolean {
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    (err as { name?: unknown }).name === 'ZodError' &&
-    Array.isArray((err as { issues?: unknown }).issues)
-  )
-}
-
-function toErrorMessage(err: unknown, fallback: string): string {
-  if (isZodError(err)) {
-    return 'Received unexpected data from the server.'
-  }
-  return err instanceof Error ? err.message : fallback
-}
-
-async function readErrorMessage(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as { message?: string }
-    return body.message ?? `Request failed with status ${response.status}`
-  } catch {
-    return `Request failed with status ${response.status}`
-  }
 }
 
 export function useTodos(): UseTodosResult {
@@ -53,11 +26,7 @@ export function useTodos(): UseTodosResult {
     setStatus('loading')
     setError(null)
     try {
-      const response = await fetch(API_BASE)
-      if (!response.ok) {
-        throw new Error(await readErrorMessage(response))
-      }
-      const data = todoListSchema.parse(await response.json())
+      const data = await listTodos()
       setTodos(data)
       setStatus(statusForTodos(data))
     } catch (err) {
@@ -72,15 +41,7 @@ export function useTodos(): UseTodosResult {
 
   const create = useCallback(async (input: CreateTodoInput) => {
     try {
-      const response = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
-      })
-      if (!response.ok) {
-        throw new Error(await readErrorMessage(response))
-      }
-      const created = todoSchema.parse(await response.json())
+      const created = await createTodo(input)
       setTodos((current) => {
         const next = [...current, created]
         setStatus(statusForTodos(next))
@@ -96,15 +57,7 @@ export function useTodos(): UseTodosResult {
 
   const update = useCallback(async (id: number, input: UpdateTodoInput) => {
     try {
-      const response = await fetch(`${API_BASE}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
-      })
-      if (!response.ok) {
-        throw new Error(await readErrorMessage(response))
-      }
-      const updated = todoSchema.parse(await response.json())
+      const updated = await updateTodo(id, input)
       setTodos((current) => current.map((todo) => (todo.id === id ? updated : todo)))
       setError(null)
     } catch (err) {
@@ -116,10 +69,7 @@ export function useTodos(): UseTodosResult {
 
   const remove = useCallback(async (id: number) => {
     try {
-      const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
-      if (!response.ok) {
-        throw new Error(await readErrorMessage(response))
-      }
+      await deleteTodo(id)
       setTodos((current) => {
         const next = current.filter((todo) => todo.id !== id)
         setStatus(statusForTodos(next))

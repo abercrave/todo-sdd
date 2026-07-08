@@ -1,4 +1,4 @@
-import { TodosPage } from './features/todos/TodosPage'
+import { TodosPage } from './components/TodosPage'
 import './App.css'
 
 function App() {
