@@ -175,10 +175,10 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 **Purpose**: Repo-wide cleanup and final validation across all user stories.
 
-- [ ] T045 [P] Run `pnpm --filter api lint` and `pnpm --filter ui lint`, fixing any ESLint/Oxlint violations introduced across this feature
-- [ ] T046 [P] Sweep `ui/src/` for dead code and stale imports left over from the `features/todos` → kind-based move (Constitution Code Quality)
-- [ ] T047 Run all automated checks: `pnpm --filter api test`, `pnpm --filter api test:e2e`, `pnpm --filter ui test`
-- [ ] T048 Execute all six manual validation scenarios in `quickstart.md` end-to-end
+- [X] T045 [P] Run `pnpm --filter api lint` and `pnpm --filter ui lint`, fixing any ESLint/Oxlint violations introduced across this feature
+- [X] T046 [P] Sweep `ui/src/` for dead code and stale imports left over from the `features/todos` → kind-based move (Constitution Code Quality)
+- [X] T047 Run all automated checks: `pnpm --filter api test`, `pnpm --filter api test:e2e`, `pnpm --filter ui test`
+- [X] T048 Execute all six manual validation scenarios in `quickstart.md` end-to-end
 
 ---
 
