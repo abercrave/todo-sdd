@@ -22,6 +22,16 @@
             "statusMessage": "security-gate: checking touched paths"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/security-gate/mark-review-owed-bash.sh\"",
+            "statusMessage": "security-gate: checking pnpm add/remove"
+          }
+        ]
       }
     ],
     "SubagentStop": [

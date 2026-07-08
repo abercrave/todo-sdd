@@ -6,11 +6,16 @@ the advisory `PreToolUse` reminder (which the model can proceed past), this gate
 blocks turn completion, so it does not depend on the model's judgment or on
 which teammate is driving. Checked into the repo, so everyone gets it.
 
-## How it works — a three-part hook chain (wired in `.claude/settings.json`)
+## How it works — a hook chain (wired in `.claude/settings.json`)
 
 1. **`mark-review-owed.sh`** — `PostToolUse(Edit|Write)`. If the edited path is
    security-sensitive, appends a line to `.claude/.security-review-owed` (the
    "marker"). Runs for main-session *and* subagent edits.
+1b. **`mark-review-owed-bash.sh`** — `PostToolUse(Bash)`. Dependency changes in
+   this repo are made via `pnpm add`/`pnpm remove` (a Bash command), not
+   Edit/Write, so step 1 never sees them. This detector reads
+   `tool_input.command` instead of `tool_input.file_path` and marks the same
+   marker when the command matches `pnpm add`/`pnpm remove`/`pnpm rm`.
 2. **`clear-review-owed.sh`** — `SubagentStop`. Deletes the marker when a
    subagent with `agent_type == "security-review"` finishes.
 3. **`gate-stop.sh`** — `Stop`. If the marker exists, `exit 2` to block the turn
@@ -49,9 +54,17 @@ citing the gate as proof a change "must" have been reviewed:
 - **The gate does not guard edits to itself.** Changes to these scripts or to
   `.claude/settings.json` are not in the sensitive set (adding them would mean
   every gate tweak requires a review). Review gate changes manually.
+- **The Bash detector only covers `pnpm add`/`pnpm remove`.** Other
+  Bash-originated sensitive-path changes — `prisma migrate dev` (Prisma
+  schema/migrations), editing `.env` via shell redirection, `npm`/`yarn`
+  instead of `pnpm` — still bypass both hooks entirely. Self-trigger
+  `security-review` for those manually; don't assume silence means clean.
 
 ## Extending
 
-Add path patterns to the `case` in `mark-review-owed.sh`. Re-run the mock-payload
-tests (pipe a JSON payload with `cwd` + `tool_input.file_path` into each script
-and assert on the marker / exit code) before relying on changes.
+Add path patterns to the `case` in `mark-review-owed.sh` (Edit/Write, matches
+on `tool_input.file_path`) or `mark-review-owed-bash.sh` (Bash, matches on
+`tool_input.command`) depending on which shape the triggering tool call has.
+Re-run the mock-payload tests (pipe a JSON payload with `cwd` +
+`tool_input.file_path` or `tool_input.command` into each script and assert on
+the marker / exit code) before relying on changes.
