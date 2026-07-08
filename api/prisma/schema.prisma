@@ -19,3 +19,10 @@ model todos {
   @@index([is_completed], map: "idx_todos_is_completed")
   @@index([due_at], map: "idx_todos_due_at")
 }
+
+model settings {
+  id             Int      @id
+  sort_field     String   @default("createdAt")
+  sort_direction String   @default("desc")
+  updated_at     DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
