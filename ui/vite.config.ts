@@ -11,6 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/todos': 'http://localhost:3000',
+      '/settings': 'http://localhost:3000',
     },
   },
   optimizeDeps: {
