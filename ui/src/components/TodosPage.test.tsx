@@ -5,7 +5,9 @@ import type { Todo } from 'shared'
 import { TodosPage } from './TodosPage'
 import { useTodos } from '../hooks/useTodos'
 import { useSortPreference } from '../hooks/useSortPreference'
-import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
+import { DEFAULT_DIRECTION } from '../constants/defaultSortDirection'
+import type { SortDirection } from '../types/sortDirection'
+import type { SortField } from '../types/sortField'
 
 vi.mock('../hooks/useTodos')
 vi.mock('../hooks/useSortPreference')
@@ -91,7 +93,9 @@ describe('TodosPage sorting', () => {
     fireEvent.click(screen.getByRole('combobox', { name: /sort by/i }))
     fireEvent.click(await screen.findByRole('option', { name: 'Date Last Updated' }))
 
-    const titles = screen.getAllByText(/^(RecentlyCreated|RecentlyUpdated)$/).map((el) => el.textContent)
+    const titles = screen
+      .getAllByText(/^(RecentlyCreated|RecentlyUpdated)$/)
+      .map((el) => el.textContent)
     expect(titles).toEqual(['RecentlyUpdated', 'RecentlyCreated'])
   })
 
@@ -112,7 +116,7 @@ describe('TodosPage sorting', () => {
     expect(titles).toEqual(['Apple', 'banana', 'cherry'])
   })
 
-  it('resets direction to the newly selected field\'s own default, not the previous field\'s direction', async () => {
+  it("resets direction to the newly selected field's own default, not the previous field's direction", async () => {
     mockTodos([
       makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
       makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
@@ -123,7 +127,10 @@ describe('TodosPage sorting', () => {
 
     // Default field is createdAt with its default direction (descending).
     const directionButton = screen.getByRole('button', { name: /direction/i })
-    expect(directionButton).toHaveAttribute('aria-pressed', String(DEFAULT_DIRECTION.createdAt === 'desc'))
+    expect(directionButton).toHaveAttribute(
+      'aria-pressed',
+      String(DEFAULT_DIRECTION.createdAt === 'desc'),
+    )
 
     // Toggle direction away from createdAt's default (desc -> asc).
     fireEvent.click(directionButton)
@@ -135,7 +142,10 @@ describe('TodosPage sorting', () => {
     fireEvent.click(screen.getByRole('combobox', { name: /sort by/i }))
     fireEvent.click(await screen.findByRole('option', { name: 'Date Last Updated' }))
 
-    expect(directionButton).toHaveAttribute('aria-pressed', String(DEFAULT_DIRECTION.updatedAt === 'desc'))
+    expect(directionButton).toHaveAttribute(
+      'aria-pressed',
+      String(DEFAULT_DIRECTION.updatedAt === 'desc'),
+    )
   })
 
   it('leaves the sort field unchanged when only the direction is toggled', () => {

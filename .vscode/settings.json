@@ -1,5 +1,6 @@
 {
-  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "oxc.fmt.configPath": "ui/.oxfmtrc.json",
+  "oxc.configPath": "ui/.oxlintrc.json",
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "[javascript]": {

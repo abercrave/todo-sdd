@@ -14,7 +14,7 @@ const baseTodo: Todo = {
 }
 
 describe('TodoItem', () => {
-  it('toggles a todo\'s completion status', async () => {
+  it("toggles a todo's completion status", async () => {
     const onToggle = vi.fn().mockResolvedValue(undefined)
     render(<TodoItem todo={baseTodo} onToggle={onToggle} onUpdate={vi.fn()} onRemove={vi.fn()} />)
 

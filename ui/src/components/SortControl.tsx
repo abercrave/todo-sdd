@@ -1,36 +1,16 @@
 import * as Select from '@radix-ui/react-select'
-import { ArrowUpIcon, ArrowDownIcon, CaretUpIcon, CaretDownIcon } from '@radix-ui/react-icons'
-import type { SortDirection, SortField } from '../types/sort'
+import { CaretUpIcon, CaretDownIcon } from '@radix-ui/react-icons'
 
-export interface SortControlProps {
-  value: SortField
-  onValueChange: (field: SortField) => void
-  direction: SortDirection
-  onDirectionChange: (direction: SortDirection) => void
-}
+import { DIRECTION_ICON, DIRECTION_LABEL, SORT_OPTIONS } from '../constants'
+import type { SortControlProps } from '../interfaces'
+import type { SortField } from '../types'
 
-interface SortOption {
-  value: SortField
-  label: string
-}
-
-const SORT_OPTIONS: SortOption[] = [
-  { value: 'createdAt', label: 'Date Created' },
-  { value: 'updatedAt', label: 'Date Last Updated' },
-  { value: 'title', label: 'Title' },
-]
-
-const DIRECTION_LABEL: Record<SortDirection, string> = {
-  asc: 'Ascending',
-  desc: 'Descending',
-}
-
-const DIRECTION_ICON: Record<SortDirection, typeof ArrowUpIcon> = {
-  asc: ArrowUpIcon,
-  desc: ArrowDownIcon,
-}
-
-export function SortControl({ value, onValueChange, direction, onDirectionChange }: SortControlProps) {
+export function SortControl({
+  value,
+  onValueChange,
+  direction,
+  onDirectionChange,
+}: SortControlProps) {
   const DirectionIcon = DIRECTION_ICON[direction]
 
   return (

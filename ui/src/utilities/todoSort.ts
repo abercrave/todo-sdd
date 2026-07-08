@@ -1,5 +1,6 @@
 import type { Todo } from 'shared'
-import type { SortDirection, SortField } from '../types/sort'
+import type { SortDirection } from '../types/sortDirection'
+import type { SortField } from '../types/sortField'
 
 /**
  * Ascending comparator for a single sort field. Dates compare by epoch

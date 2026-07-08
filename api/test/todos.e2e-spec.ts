@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import type { Server } from 'http';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
@@ -22,7 +23,7 @@ interface ErrorResponseBody {
 }
 
 describe('Todos (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Server>;
   let prisma: PrismaService;
 
   beforeAll(async () => {

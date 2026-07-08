@@ -5,7 +5,8 @@ import { TodoForm } from './TodoForm'
 import { TodoList } from './TodoList'
 import { SortControl } from './SortControl'
 import { sortTodos } from '../utilities/todoSort'
-import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
+import { DEFAULT_DIRECTION, TODOS_STATUS } from '../constants'
+import type { SortDirection, SortField } from '../types'
 
 export function TodosPage() {
   // Sibling hooks, each with their own effect: `useTodos` fetches GET /todos
@@ -47,7 +48,7 @@ export function TodosPage() {
 
       <TodoForm onSubmit={create} />
 
-      {(status === 'ready' || status === 'empty') && (
+      {(status === TODOS_STATUS.READY || status === TODOS_STATUS.EMPTY) && (
         <SortControl
           value={sortField}
           onValueChange={handleFieldChange}
@@ -56,8 +57,8 @@ export function TodosPage() {
         />
       )}
 
-      {status === 'loading' && <p className="loading-state">Loading todos…</p>}
-      {(status === 'ready' || status === 'empty') && (
+      {status === TODOS_STATUS.LOADING && <p className="loading-state">Loading todos…</p>}
+      {(status === TODOS_STATUS.READY || status === TODOS_STATUS.EMPTY) && (
         <TodoList
           todos={sortedTodos}
           onToggle={(id, isCompleted) => update(id, { isCompleted })}

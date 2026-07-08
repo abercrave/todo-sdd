@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
 import { createTodo, deleteTodo, listTodos, toErrorMessage, updateTodo } from '../services/todosApi'
-
-export type TodosStatus = 'loading' | 'error' | 'empty' | 'ready'
+import { TODOS_STATUS } from '../constants/todosStatus'
+import type { TodosStatus } from '../types/todosStatus'
 
 export interface UseTodosResult {
   todos: Todo[]
@@ -14,23 +14,23 @@ export interface UseTodosResult {
 }
 
 function statusForTodos(todos: Todo[]): TodosStatus {
-  return todos.length === 0 ? 'empty' : 'ready'
+  return todos.length === 0 ? TODOS_STATUS.EMPTY : TODOS_STATUS.READY
 }
 
 export function useTodos(): UseTodosResult {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [status, setStatus] = useState<TodosStatus>('loading')
+  const [status, setStatus] = useState<TodosStatus>(TODOS_STATUS.LOADING)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
-    setStatus('loading')
+    setStatus(TODOS_STATUS.LOADING)
     setError(null)
     try {
       const data = await listTodos()
       setTodos(data)
       setStatus(statusForTodos(data))
     } catch (err) {
-      setStatus('error')
+      setStatus(TODOS_STATUS.ERROR)
       setError(toErrorMessage(err, 'Failed to load todos'))
     }
   }, [])

@@ -1,6 +1,5 @@
-export type SortField = 'createdAt' | 'updatedAt' | 'title'
-
-export type SortDirection = 'asc' | 'desc'
+import type { SortDirection } from '../types/sortDirection'
+import type { SortField } from '../types/sortField'
 
 /**
  * Each sort field has its own default direction (FR-016/FR-017): dates

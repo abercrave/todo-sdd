@@ -30,9 +30,7 @@ describe('TodoList', () => {
   })
 
   it("displays each todo's title, description, due date, and completion status", () => {
-    render(
-      <TodoList todos={[baseTodo]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />,
-    )
+    render(<TodoList todos={[baseTodo]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
 
     expect(screen.getByText('Buy groceries')).toBeInTheDocument()
     expect(screen.getByText('Milk, eggs')).toBeInTheDocument()
@@ -81,9 +79,7 @@ describe('TodoList', () => {
   })
 
   it('renders no Completed section when there are zero completed todos', () => {
-    render(
-      <TodoList todos={[baseTodo]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />,
-    )
+    render(<TodoList todos={[baseTodo]} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
 
     expect(screen.queryByRole('heading', { name: /completed/i })).not.toBeInTheDocument()
   })

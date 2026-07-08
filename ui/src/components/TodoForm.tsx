@@ -2,19 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import * as Form from '@radix-ui/react-form'
 import { createTodoSchema } from 'shared'
-import type { CreateTodoInput } from 'shared'
-
-export interface TodoFormInitialValues {
-  title: string
-  description: string
-  dueAt: string
-}
-
-export interface TodoFormProps {
-  onSubmit: (input: CreateTodoInput) => Promise<void>
-  initialValues?: TodoFormInitialValues
-  submitLabel?: string
-}
+import type { TodoFormProps } from '../interfaces'
 
 export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: TodoFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '')
@@ -29,8 +17,8 @@ export function TodoForm({ onSubmit, initialValues, submitLabel = 'Add todo' }: 
   // native HTML constraint attribute. Each helper below parses that field's
   // slice of the schema (createTodoSchema.shape.<field>) using the exact same
   // normalization already used in the top-level parse in handleSubmit, so
-  // there is exactly one place - shared/src/todo.schema.ts - that defines
-  // what "required"/"too long"/"invalid date" means.
+  // there is exactly one place - the shared/src/todo/ field schemas - that
+  // defines what "required"/"too long"/"invalid date" means.
   const titleFieldMessage = (value: string) => {
     const result = createTodoSchema.shape.title.safeParse(value)
     return result.success ? undefined : result.error.issues[0]?.message

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Todo } from 'shared'
 import { sortTodos } from './todoSort'
-import { DEFAULT_DIRECTION } from '../types/sort'
+import { DEFAULT_DIRECTION } from '../constants/defaultSortDirection'
 
 function makeTodo(overrides: Partial<Todo> & { id: number }): Todo {
   return {
@@ -95,7 +95,9 @@ describe('sortTodos', () => {
 
     expect(ascending.map((todo) => todo.id)).toEqual([1, 2, 3])
     expect(descending.map((todo) => todo.id)).toEqual([3, 2, 1])
-    expect(descending.map((todo) => todo.id)).toEqual([...ascending.map((todo) => todo.id)].reverse())
+    expect(descending.map((todo) => todo.id)).toEqual(
+      [...ascending.map((todo) => todo.id)].reverse(),
+    )
   })
 })
 

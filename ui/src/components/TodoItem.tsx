@@ -1,15 +1,9 @@
 import { useState } from 'react'
 import * as Checkbox from '@radix-ui/react-checkbox'
-import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
+import type { CreateTodoInput } from 'shared'
 import { TodoForm } from './TodoForm'
-import { isOverdue } from '../utilities/todoOverdue'
-
-export interface TodoItemProps {
-  todo: Todo
-  onToggle: (id: number, isCompleted: boolean) => Promise<void>
-  onUpdate: (id: number, input: UpdateTodoInput) => Promise<void>
-  onRemove: (id: number) => Promise<void>
-}
+import { isOverdue } from '../utilities'
+import type { TodoItemProps } from '../interfaces'
 
 function toDateInputValue(date: Date): string {
   return date.toISOString().slice(0, 10)
@@ -56,7 +50,11 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
           onSubmit={handleEditSubmit}
         />
         <div className="todo-actions">
-          <button type="button" className="button button-secondary" onClick={() => setIsEditing(false)}>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => setIsEditing(false)}
+          >
             Cancel
           </button>
         </div>
@@ -89,7 +87,11 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
       <p className="todo-status">{todo.isCompleted ? 'Done' : 'Not done'}</p>
 
       <div className="todo-actions">
-        <button type="button" className="button button-secondary" onClick={() => setIsEditing(true)}>
+        <button
+          type="button"
+          className="button button-secondary"
+          onClick={() => setIsEditing(true)}
+        >
           Edit
         </button>
         <button type="button" className="button button-danger" onClick={() => void handleRemove()}>

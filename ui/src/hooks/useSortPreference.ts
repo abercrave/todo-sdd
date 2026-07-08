@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getSettings, updateSettings } from '../services/settingsApi'
-import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
+import { DEFAULT_DIRECTION } from '../constants/defaultSortDirection'
+import type { SortDirection } from '../types/sortDirection'
+import type { SortField } from '../types/sortField'
 
 // Default per FR-007/FR-019: Date Created, most recent first, applied
 // whenever no preference has ever been saved or the saved preference can't
@@ -15,17 +17,19 @@ export interface UseSortPreferenceResult {
 
 export function useSortPreference(): UseSortPreferenceResult {
   const [sortField, setSortField] = useState<SortField>(DEFAULT_FIELD)
-  const [sortDirection, setSortDirection] = useState<SortDirection>(DEFAULT_DIRECTION[DEFAULT_FIELD])
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    DEFAULT_DIRECTION[DEFAULT_FIELD],
+  )
 
   // Loads the saved preference in parallel with useTodos's own GET /todos
   // fetch (research.md §9) - this effect never awaits anything else, so it
   // races independently rather than serializing behind the todo list.
   useEffect(() => {
-    let cancelled = false
+    let isCancelled = false
 
     void getSettings()
       .then((settings) => {
-        if (cancelled) {
+        if (isCancelled) {
           return
         }
         setSortField(settings.sortField)
@@ -38,7 +42,7 @@ export function useSortPreference(): UseSortPreferenceResult {
       })
 
     return () => {
-      cancelled = true
+      isCancelled = true
     }
   }, [])
 

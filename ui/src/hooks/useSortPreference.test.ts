@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Settings } from 'shared'
 import { useSortPreference } from './useSortPreference'
 import { getSettings, updateSettings } from '../services/settingsApi'
-import { DEFAULT_DIRECTION } from '../types/sort'
+import { DEFAULT_DIRECTION } from '../constants/defaultSortDirection'
 
 vi.mock('../services/settingsApi')
 
