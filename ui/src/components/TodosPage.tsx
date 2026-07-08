@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTodos } from '../hooks/useTodos'
+import { useSortPreference } from '../hooks/useSortPreference'
 import { TodoForm } from './TodoForm'
 import { TodoList } from './TodoList'
 import { SortControl } from './SortControl'
@@ -7,17 +8,23 @@ import { sortTodos } from '../utilities/todoSort'
 import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
 
 export function TodosPage() {
+  // Sibling hooks, each with their own effect: `useTodos` fetches GET /todos
+  // and `useSortPreference` fetches GET /settings in parallel, not one
+  // awaiting the other (research.md §9).
   const { todos, status, error, create, update, remove } = useTodos()
-  // Default per FR-007: Date Created, most recent first.
-  const [sortField, setSortField] = useState<SortField>('createdAt')
-  const [sortDirection, setSortDirection] = useState<SortDirection>(DEFAULT_DIRECTION.createdAt)
+  const { sortField, sortDirection, setSort } = useSortPreference()
 
   // Selecting a new field applies that field's own default direction
   // (FR-016/FR-017) rather than carrying over whatever direction was active
   // for the previous field.
   function handleFieldChange(field: SortField) {
-    setSortField(field)
-    setSortDirection(DEFAULT_DIRECTION[field])
+    setSort(field, DEFAULT_DIRECTION[field])
+  }
+
+  // Toggling direction alone must retain the currently selected field
+  // (FR-016).
+  function handleDirectionChange(direction: SortDirection) {
+    setSort(sortField, direction)
   }
 
   // Memoized so a full re-sort isn't triggered by every unrelated re-render
@@ -45,7 +52,7 @@ export function TodosPage() {
           value={sortField}
           onValueChange={handleFieldChange}
           direction={sortDirection}
-          onDirectionChange={setSortDirection}
+          onDirectionChange={handleDirectionChange}
         />
       )}
 

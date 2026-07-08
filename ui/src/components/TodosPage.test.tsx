@@ -1,11 +1,14 @@
+import { useState } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { Todo } from 'shared'
 import { TodosPage } from './TodosPage'
 import { useTodos } from '../hooks/useTodos'
-import { DEFAULT_DIRECTION } from '../types/sort'
+import { useSortPreference } from '../hooks/useSortPreference'
+import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
 
 vi.mock('../hooks/useTodos')
+vi.mock('../hooks/useSortPreference')
 
 function makeTodo(overrides: Partial<Todo> & { id: number; title: string }): Todo {
   return {
@@ -29,12 +32,36 @@ function mockTodos(todos: Todo[]) {
   })
 }
 
+// Mirrors the real useSortPreference's stateful behavior (field/direction
+// change together via setSort) using React's own useState, since TodosPage
+// relies on state actually updating and re-rendering when the user
+// interacts with SortControl.
+function mockSortPreference(
+  initialField: SortField = 'createdAt',
+  initialDirection: SortDirection = DEFAULT_DIRECTION.createdAt,
+) {
+  vi.mocked(useSortPreference).mockImplementation(() => {
+    const [sortField, setSortField] = useState(initialField)
+    const [sortDirection, setSortDirection] = useState(initialDirection)
+
+    return {
+      sortField,
+      sortDirection,
+      setSort: (field: SortField, direction: SortDirection) => {
+        setSortField(field)
+        setSortDirection(direction)
+      },
+    }
+  })
+}
+
 describe('TodosPage sorting', () => {
   it('defaults to Date Created, newest first', () => {
     mockTodos([
       makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
       makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
     ])
+    mockSortPreference()
 
     render(<TodosPage />)
 
@@ -57,6 +84,7 @@ describe('TodosPage sorting', () => {
         updatedAt: new Date('2026-03-01T00:00:00.000Z'),
       }),
     ])
+    mockSortPreference()
 
     render(<TodosPage />)
 
@@ -73,6 +101,7 @@ describe('TodosPage sorting', () => {
       makeTodo({ id: 2, title: 'Apple' }),
       makeTodo({ id: 3, title: 'cherry' }),
     ])
+    mockSortPreference()
 
     render(<TodosPage />)
 
@@ -88,6 +117,7 @@ describe('TodosPage sorting', () => {
       makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
       makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
     ])
+    mockSortPreference()
 
     render(<TodosPage />)
 
@@ -113,6 +143,7 @@ describe('TodosPage sorting', () => {
       makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
       makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
     ])
+    mockSortPreference()
 
     render(<TodosPage />)
 

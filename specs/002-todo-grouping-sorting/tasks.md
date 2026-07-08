@@ -153,7 +153,7 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 - [X] T033 [P] [US5] Jest unit tests in `api/src/settings/settings.service.spec.ts` covering: `getSettings()` returns documented defaults when no row exists; `updateSettings()` upserts the single row
 - [X] T034 [P] [US5] Supertest integration test in `api/test/settings.e2e-spec.ts` verifying `GET`/`PUT /settings` persist and read back correctly against real Postgres (FR-018–FR-020), plus a case asserting `PUT /settings` with an invalid `sortField`/`sortDirection` returns `400` with the standard error shape (contracts/settings-api.md)
-- [ ] T035 [P] [US5] Vitest test in `ui/src/hooks/useSortPreference.test.ts` covering: loads a saved preference on mount; falls back to defaults when the fetch fails or no preference exists; persists a new preference when the field or direction changes; when `updateSettings` rejects, the field/direction change still applies locally and no error is surfaced (FR-021)
+- [X] T035 [P] [US5] Vitest test in `ui/src/hooks/useSortPreference.test.ts` covering: loads a saved preference on mount; falls back to defaults when the fetch fails or no preference exists; persists a new preference when the field or direction changes; when `updateSettings` rejects, the field/direction change still applies locally and no error is surfaced (FR-021)
 
 ### Implementation for User Story 5
 
@@ -163,9 +163,9 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 - [X] T039 [US5] Create `api/src/settings/settings.service.ts` exporting `getSettings()` (reads the `id = 1` row, returning `{ sortField: 'createdAt', sortDirection: 'desc' }` if it doesn't exist yet) and `updateSettings(input)` (upserts the `id = 1` row)
 - [X] T040 [US5] Create `api/src/settings/settings.controller.ts` with `GET /settings` and `PUT /settings` (validated via the existing `ZodValidationPipe` and `settingsSchema`)
 - [X] T041 [US5] Create `api/src/settings/settings.module.ts` and register it in `api/src/app.module.ts`
-- [ ] T042 [P] [US5] Create `ui/src/services/settingsApi.ts` exporting `getSettings()` and `updateSettings(input)` `fetch` wrappers
-- [ ] T043 [US5] Create `ui/src/hooks/useSortPreference.ts`: loads settings on mount (fetched in parallel with `GET /todos`, not sequentially — research.md §9), exposes `{ sortField, sortDirection, setSort }`, falls back to `DEFAULT_DIRECTION`-based defaults on a failed/missing fetch (FR-019), and calls `updateSettings` whenever `setSort` is used (FR-020). `setSort` applies the new field/direction to local state immediately regardless of whether the `updateSettings` call succeeds, and does not surface a rejected save as an error — it is simply retried on the next `setSort` call (FR-021)
-- [ ] T044 [US5] Update `ui/src/components/TodosPage.tsx` to fetch todos and settings in parallel and use `useSortPreference` instead of the local `{ field, direction }` state introduced in T031
+- [X] T042 [P] [US5] Create `ui/src/services/settingsApi.ts` exporting `getSettings()` and `updateSettings(input)` `fetch` wrappers
+- [X] T043 [US5] Create `ui/src/hooks/useSortPreference.ts`: loads settings on mount (fetched in parallel with `GET /todos`, not sequentially — research.md §9), exposes `{ sortField, sortDirection, setSort }`, falls back to `DEFAULT_DIRECTION`-based defaults on a failed/missing fetch (FR-019), and calls `updateSettings` whenever `setSort` is used (FR-020). `setSort` applies the new field/direction to local state immediately regardless of whether the `updateSettings` call succeeds, and does not surface a rejected save as an error — it is simply retried on the next `setSort` call (FR-021)
+- [X] T044 [US5] Update `ui/src/components/TodosPage.tsx` to fetch todos and settings in parallel and use `useSortPreference` instead of the local `{ field, direction }` state introduced in T031
 
 **Checkpoint**: All five user stories are independently functional.
 
