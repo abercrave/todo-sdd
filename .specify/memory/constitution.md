@@ -1,10 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 1.2.0 → 1.3.0
+- Version change: 1.4.0 → 1.4.1
 - Modified principles:
-  - V. Frontend Architecture & Reusability — added a one-asset-per-file
-    requirement for constants, types, enums, and interfaces
-- Added sections: none (existing principle expanded, not added)
+  - V. Frontend Architecture & Reusability — removed the parenthetical
+    cross-reference to Principle I's one-asset-per-file rule; Principle I is
+    already the sole authoritative statement of that rule as of 1.4.0, so the
+    pointer was redundant, not clarifying. No rule or requirement changed.
+- Added sections: none
 - Removed sections: none
 - Templates requiring updates:
   - ✅ .specify/templates/plan-template.md — Constitution Check gate reads principles
@@ -13,8 +15,13 @@ Sync Impact Report
   - ✅ .specify/templates/tasks-template.md — generic, no principle-specific references
   - ✅ .specify/templates/checklist-template.md — generic, no principle-specific references
   - ⚠ No .specify/templates/commands/*.md directory present — nothing to update
-- Follow-up TODOs: none (see assistant's completion summary for a flagged
-  existing-code non-conformance to fix separately: ui/src/types/sort.ts)
+- Follow-up TODOs (existing-code non-conformance flagged in 1.4.0, still
+  unfixed, carried forward unchanged by this wording-only amendment):
+  - ui/src/types/sort.ts — still bundles two types and a constant
+  - shared/src/todo.schema.ts — bundles two length constants, two schemas,
+    and three inferred types in one file
+  - shared/src/settings.schema.ts — bundles two enum schemas, two object
+    schemas, and four inferred types in one file
 -->
 
 # Todo SDD Constitution
@@ -38,7 +45,11 @@ exports, commented-out blocks, stray `console.log` calls — MUST be deleted,
 not left "for reference." Naming MUST follow consistent casing conventions for
 files, components, and functions, and boolean names MUST be prefixed with
 `is`, `has`, or `should` so intent is unambiguous. Magic numbers and strings
-MUST be extracted into named constants or enums rather than inlined. When
+MUST be extracted into named constants or enums rather than inlined.
+Constants, types, enums, and interfaces MUST each be defined in their own
+dedicated file rather than bundled together into a shared/catch-all module —
+across frontend, backend, and shared code alike — so a reader can locate a
+given asset by its name without scanning unrelated declarations. When
 changing an existing prop, method signature, or exported function, the change
 MUST preserve backward compatibility with existing call sites or update every
 call site in the same change.
@@ -48,7 +59,11 @@ maintenance cost from type drift and duplicated validation. Enforcing these
 mechanically (compiler, linter, shared schema) prevents defects before review
 rather than relying on manual vigilance. Dead code and inconsistent naming
 impose the same drift cost as type errors even though no tool blocks them by
-default, so they are called out as explicit MUSTs here.
+default, so they are called out as explicit MUSTs here. One-asset-per-file
+keeps imports self-documenting and avoids the merge-conflict and
+unrelated-diff noise that catch-all files accumulate as a project grows — a
+cost that applies identically whether the catch-all lives in the frontend,
+the backend, or the shared package.
 
 ### II. Testing Standards
 
@@ -123,18 +138,11 @@ layer rather than issued directly from components, so request logic and error
 handling live in one place. Asynchronous logic MUST use async/await or
 Promises with explicit rejection handling, and any subscription, timer, or
 listener started in a `useEffect` MUST be torn down in its cleanup function.
-Constants, types, enums, and interfaces MUST each be defined in their own
-dedicated file rather than bundled together into a shared/catch-all module,
-so a reader can locate a given asset by its name without scanning unrelated
-declarations.
 
 **Rationale**: Consistent structure and enforced reuse keep a growing frontend
 navigable without a style-guide meeting for every PR. Centralizing API calls
 and requiring effect cleanup prevents the duplicated error-handling logic and
 memory leaks that otherwise accumulate silently in component-first codebases.
-One-asset-per-file keeps imports self-documenting (the file name tells you
-what's inside) and avoids the merge-conflict and unrelated-diff noise that
-catch-all files accumulate as a project grows.
 
 ## Additional Constraints
 
@@ -175,4 +183,4 @@ authoritative source for day-to-day runtime development guidance (tone,
 model-assignment rules, tech stack detail) and MUST stay consistent with this
 constitution.
 
-**Version**: 1.3.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-08
+**Version**: 1.4.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-08
