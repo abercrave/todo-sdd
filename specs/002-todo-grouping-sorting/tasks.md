@@ -129,15 +129,15 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 ### Tests for User Story 4
 
-- [ ] T027 [P] [US4] Extend `ui/src/utilities/todoSort.test.ts` with cases for: case-insensitive title comparison; descending exactly mirroring ascending including tied titles; each field's default direction from `DEFAULT_DIRECTION`
+- [X] T027 [P] [US4] Extend `ui/src/utilities/todoSort.test.ts` with cases for: case-insensitive title comparison; descending exactly mirroring ascending including tied titles; each field's default direction from `DEFAULT_DIRECTION`
 
 ### Implementation for User Story 4
 
-- [ ] T028 [US4] Extend `ui/src/types/sort.ts`: add `'title'` to `SortField`; add `SortDirection = 'asc' | 'desc'`; add a `DEFAULT_DIRECTION: Record<SortField, SortDirection>` constant (`createdAt`/`updatedAt` → `'desc'`, `title` → `'asc'`)
-- [ ] T029 [US4] Extend `ui/src/utilities/todoSort.ts`: add a `title` case comparing via `localeCompare(..., undefined, { sensitivity: 'base' })` (FR-012, FR-013); change `sortTodos` to accept a `direction` parameter, always sorting ascending first and then reversing the resulting array when `direction === 'desc'` — not negating the comparator (FR-014, FR-015; research.md §7)
-- [ ] T030 [US4] Add a "Title" option and a direction toggle control to `ui/src/components/SortControl.tsx`
-- [ ] T031 [US4] Update `ui/src/components/TodosPage.tsx`'s sort state to hold `{ field, direction }`; selecting a new field looks up `DEFAULT_DIRECTION[field]` rather than reusing the previous field's direction (FR-016, FR-017); update the `useMemo` dependency array to `[todos, sortField, sortDirection]` (research.md §4)
-- [ ] T032 [P] [US4] Vitest test in `ui/src/components/SortControl.test.tsx` covering: selecting "Title" sorts alphabetically; toggling direction reverses order; switching fields resets to that field's default direction
+- [X] T028 [US4] Extend `ui/src/types/sort.ts`: add `'title'` to `SortField`; add `SortDirection = 'asc' | 'desc'`; add a `DEFAULT_DIRECTION: Record<SortField, SortDirection>` constant (`createdAt`/`updatedAt` → `'desc'`, `title` → `'asc'`)
+- [X] T029 [US4] Extend `ui/src/utilities/todoSort.ts`: add a `title` case comparing via `localeCompare(..., undefined, { sensitivity: 'base' })` (FR-012, FR-013); change `sortTodos` to accept a `direction` parameter, always sorting ascending first and then reversing the resulting array when `direction === 'desc'` — not negating the comparator (FR-014, FR-015; research.md §7)
+- [X] T030 [US4] Add a "Title" option and a direction toggle control to `ui/src/components/SortControl.tsx`
+- [X] T031 [US4] Update `ui/src/components/TodosPage.tsx`'s sort state to hold `{ field, direction }`; selecting a new field looks up `DEFAULT_DIRECTION[field]` rather than reusing the previous field's direction (FR-016, FR-017); update the `useMemo` dependency array to `[todos, sortField, sortDirection]` (research.md §4)
+- [X] T032 [P] [US4] Vitest test in `ui/src/components/SortControl.test.tsx` covering: selecting "Title" sorts alphabetically; toggling direction reverses order; switching fields resets to that field's default direction
 
 **Checkpoint**: User Stories 1–4 all work independently.
 

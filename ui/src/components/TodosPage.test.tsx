@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { Todo } from 'shared'
 import { TodosPage } from './TodosPage'
 import { useTodos } from '../hooks/useTodos'
+import { DEFAULT_DIRECTION } from '../types/sort'
 
 vi.mock('../hooks/useTodos')
 
@@ -64,5 +65,62 @@ describe('TodosPage sorting', () => {
 
     const titles = screen.getAllByText(/^(RecentlyCreated|RecentlyUpdated)$/).map((el) => el.textContent)
     expect(titles).toEqual(['RecentlyUpdated', 'RecentlyCreated'])
+  })
+
+  it('sorts alphabetically, case-insensitively, when "Title" is selected', async () => {
+    mockTodos([
+      makeTodo({ id: 1, title: 'banana' }),
+      makeTodo({ id: 2, title: 'Apple' }),
+      makeTodo({ id: 3, title: 'cherry' }),
+    ])
+
+    render(<TodosPage />)
+
+    fireEvent.click(screen.getByRole('combobox', { name: /sort by/i }))
+    fireEvent.click(await screen.findByRole('option', { name: 'Title' }))
+
+    const titles = screen.getAllByText(/^(banana|Apple|cherry)$/).map((el) => el.textContent)
+    expect(titles).toEqual(['Apple', 'banana', 'cherry'])
+  })
+
+  it('resets direction to the newly selected field\'s own default, not the previous field\'s direction', async () => {
+    mockTodos([
+      makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
+      makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
+    ])
+
+    render(<TodosPage />)
+
+    // Default field is createdAt with its default direction (descending).
+    const directionButton = screen.getByRole('button', { name: /direction/i })
+    expect(directionButton).toHaveAttribute('aria-pressed', String(DEFAULT_DIRECTION.createdAt === 'desc'))
+
+    // Toggle direction away from createdAt's default (desc -> asc).
+    fireEvent.click(directionButton)
+    expect(directionButton).toHaveAttribute('aria-pressed', 'false')
+
+    // Switching to "Date Last Updated" must apply *that* field's own
+    // default direction (desc) rather than carrying over the previously
+    // toggled "asc" from createdAt (FR-016/FR-017).
+    fireEvent.click(screen.getByRole('combobox', { name: /sort by/i }))
+    fireEvent.click(await screen.findByRole('option', { name: 'Date Last Updated' }))
+
+    expect(directionButton).toHaveAttribute('aria-pressed', String(DEFAULT_DIRECTION.updatedAt === 'desc'))
+  })
+
+  it('leaves the sort field unchanged when only the direction is toggled', () => {
+    mockTodos([
+      makeTodo({ id: 1, title: 'Oldest', createdAt: new Date('2026-01-01T00:00:00.000Z') }),
+      makeTodo({ id: 2, title: 'Newest', createdAt: new Date('2026-03-01T00:00:00.000Z') }),
+    ])
+
+    render(<TodosPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /direction/i }))
+
+    expect(screen.getByRole('combobox', { name: /sort by/i })).toHaveTextContent('Date Created')
+
+    const titles = screen.getAllByText(/^(Oldest|Newest)$/).map((el) => el.textContent)
+    expect(titles).toEqual(['Oldest', 'Newest'])
   })
 })

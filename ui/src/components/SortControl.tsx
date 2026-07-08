@@ -1,9 +1,11 @@
 import * as Select from '@radix-ui/react-select'
-import type { SortField } from '../types/sort'
+import type { SortDirection, SortField } from '../types/sort'
 
 export interface SortControlProps {
   value: SortField
   onValueChange: (field: SortField) => void
+  direction: SortDirection
+  onDirectionChange: (direction: SortDirection) => void
 }
 
 interface SortOption {
@@ -14,9 +16,15 @@ interface SortOption {
 const SORT_OPTIONS: SortOption[] = [
   { value: 'createdAt', label: 'Date Created' },
   { value: 'updatedAt', label: 'Date Last Updated' },
+  { value: 'title', label: 'Title' },
 ]
 
-export function SortControl({ value, onValueChange }: SortControlProps) {
+const DIRECTION_LABEL: Record<SortDirection, string> = {
+  asc: 'Ascending',
+  desc: 'Descending',
+}
+
+export function SortControl({ value, onValueChange, direction, onDirectionChange }: SortControlProps) {
   return (
     <div className="sort-control">
       <label className="sort-control-label" id="sort-control-label">
@@ -41,6 +49,15 @@ export function SortControl({ value, onValueChange }: SortControlProps) {
           </Select.Content>
         </Select.Portal>
       </Select.Root>
+      <button
+        type="button"
+        className="sort-control-direction"
+        aria-label="Sort direction"
+        aria-pressed={direction === 'desc'}
+        onClick={() => onDirectionChange(direction === 'asc' ? 'desc' : 'asc')}
+      >
+        {DIRECTION_LABEL[direction]}
+      </button>
     </div>
   )
 }

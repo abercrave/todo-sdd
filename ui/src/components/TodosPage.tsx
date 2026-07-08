@@ -4,19 +4,29 @@ import { TodoForm } from './TodoForm'
 import { TodoList } from './TodoList'
 import { SortControl } from './SortControl'
 import { sortTodos } from '../utilities/todoSort'
-import type { SortField } from '../types/sort'
+import { DEFAULT_DIRECTION, type SortDirection, type SortField } from '../types/sort'
 
 export function TodosPage() {
   const { todos, status, error, create, update, remove } = useTodos()
-  // Default per FR-007: Date Created, most recent first. `sortTodos` only
-  // sorts ascending (direction toggling arrives in a later user story), so
-  // the ascending result is reversed to get "most recent first".
+  // Default per FR-007: Date Created, most recent first.
   const [sortField, setSortField] = useState<SortField>('createdAt')
+  const [sortDirection, setSortDirection] = useState<SortDirection>(DEFAULT_DIRECTION.createdAt)
+
+  // Selecting a new field applies that field's own default direction
+  // (FR-016/FR-017) rather than carrying over whatever direction was active
+  // for the previous field.
+  function handleFieldChange(field: SortField) {
+    setSortField(field)
+    setSortDirection(DEFAULT_DIRECTION[field])
+  }
 
   // Memoized so a full re-sort isn't triggered by every unrelated re-render
-  // of this component (research.md §4) - only recomputed when the todo list
-  // or the chosen sort field actually changes.
-  const sortedTodos = useMemo(() => [...sortTodos(todos, sortField)].reverse(), [todos, sortField])
+  // of this component (research.md §4) - only recomputed when the todo list,
+  // the chosen sort field, or the chosen direction actually changes.
+  const sortedTodos = useMemo(
+    () => sortTodos(todos, sortField, sortDirection),
+    [todos, sortField, sortDirection],
+  )
 
   return (
     <main className="todos-page">
@@ -31,7 +41,12 @@ export function TodosPage() {
       <TodoForm onSubmit={create} />
 
       {(status === 'ready' || status === 'empty') && (
-        <SortControl value={sortField} onValueChange={setSortField} />
+        <SortControl
+          value={sortField}
+          onValueChange={handleFieldChange}
+          direction={sortDirection}
+          onDirectionChange={setSortDirection}
+        />
       )}
 
       {status === 'loading' && <p className="loading-state">Loading todos…</p>}
