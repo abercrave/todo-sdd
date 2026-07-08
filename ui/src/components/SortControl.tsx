@@ -1,4 +1,5 @@
 import * as Select from '@radix-ui/react-select'
+import { ArrowUpIcon, ArrowDownIcon, CaretUpIcon, CaretDownIcon } from '@radix-ui/react-icons'
 import type { SortDirection, SortField } from '../types/sort'
 
 export interface SortControlProps {
@@ -24,7 +25,14 @@ const DIRECTION_LABEL: Record<SortDirection, string> = {
   desc: 'Descending',
 }
 
+const DIRECTION_ICON: Record<SortDirection, typeof ArrowUpIcon> = {
+  asc: ArrowUpIcon,
+  desc: ArrowDownIcon,
+}
+
 export function SortControl({ value, onValueChange, direction, onDirectionChange }: SortControlProps) {
+  const DirectionIcon = DIRECTION_ICON[direction]
+
   return (
     <div className="sort-control">
       <label className="sort-control-label" id="sort-control-label">
@@ -34,7 +42,8 @@ export function SortControl({ value, onValueChange, direction, onDirectionChange
         <Select.Trigger className="sort-control-trigger" aria-labelledby="sort-control-label">
           <Select.Value />
           <Select.Icon className="sort-control-icon" aria-hidden="true">
-            ▾
+            <CaretUpIcon className="sort-control-icon-open" />
+            <CaretDownIcon className="sort-control-icon-closed" />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
@@ -56,6 +65,7 @@ export function SortControl({ value, onValueChange, direction, onDirectionChange
         aria-pressed={direction === 'desc'}
         onClick={() => onDirectionChange(direction === 'asc' ? 'desc' : 'asc')}
       >
+        <DirectionIcon className="sort-control-direction-icon" aria-hidden="true" />
         {DIRECTION_LABEL[direction]}
       </button>
     </div>

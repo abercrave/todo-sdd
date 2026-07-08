@@ -155,8 +155,22 @@
 }
 
 .sort-control-icon {
+  display: inline-flex;
   color: var(--text);
-  font-size: 11px;
+}
+
+.sort-control-icon-open,
+.sort-control-icon-closed {
+  width: 15px;
+  height: 15px;
+}
+
+.sort-control-trigger[data-state='closed'] .sort-control-icon-open {
+  display: none;
+}
+
+.sort-control-trigger[data-state='open'] .sort-control-icon-closed {
+  display: none;
 }
 
 .sort-control-content {
@@ -187,6 +201,9 @@
 }
 
 .sort-control-direction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -210,6 +227,11 @@
 .sort-control-direction[aria-pressed='true'] {
   border-color: var(--accent-border);
   color: var(--accent);
+}
+
+.sort-control-direction-icon {
+  width: 14px;
+  height: 14px;
 }
 
 /* Todo list */
