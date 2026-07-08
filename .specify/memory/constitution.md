@@ -1,15 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 → 1.2.0
+- Version change: 1.2.0 → 1.3.0
 - Modified principles:
-  - I. Code Quality — added dead-code removal, naming conventions, magic-value
-    constants/enums, and backward-compatibility requirements
-  - III. User Experience Consistency — clarified edge-case handling to cover
-    network failures and malformed responses explicitly
-  - IV. Performance Requirements — added React re-render discipline, code
-    splitting, and render-body cleanliness requirements
-- Added sections:
-  - Core Principles: V. Frontend Architecture & Reusability
+  - V. Frontend Architecture & Reusability — added a one-asset-per-file
+    requirement for constants, types, enums, and interfaces
+- Added sections: none (existing principle expanded, not added)
 - Removed sections: none
 - Templates requiring updates:
   - ✅ .specify/templates/plan-template.md — Constitution Check gate reads principles
@@ -18,7 +13,8 @@ Sync Impact Report
   - ✅ .specify/templates/tasks-template.md — generic, no principle-specific references
   - ✅ .specify/templates/checklist-template.md — generic, no principle-specific references
   - ⚠ No .specify/templates/commands/*.md directory present — nothing to update
-- Follow-up TODOs: none
+- Follow-up TODOs: none (see assistant's completion summary for a flagged
+  existing-code non-conformance to fix separately: ui/src/types/sort.ts)
 -->
 
 # Todo SDD Constitution
@@ -127,11 +123,18 @@ layer rather than issued directly from components, so request logic and error
 handling live in one place. Asynchronous logic MUST use async/await or
 Promises with explicit rejection handling, and any subscription, timer, or
 listener started in a `useEffect` MUST be torn down in its cleanup function.
+Constants, types, enums, and interfaces MUST each be defined in their own
+dedicated file rather than bundled together into a shared/catch-all module,
+so a reader can locate a given asset by its name without scanning unrelated
+declarations.
 
 **Rationale**: Consistent structure and enforced reuse keep a growing frontend
 navigable without a style-guide meeting for every PR. Centralizing API calls
 and requiring effect cleanup prevents the duplicated error-handling logic and
 memory leaks that otherwise accumulate silently in component-first codebases.
+One-asset-per-file keeps imports self-documenting (the file name tells you
+what's inside) and avoids the merge-conflict and unrelated-diff noise that
+catch-all files accumulate as a project grows.
 
 ## Additional Constraints
 
@@ -172,4 +175,4 @@ authoritative source for day-to-day runtime development guidance (tone,
 model-assignment rules, tech stack detail) and MUST stay consistent with this
 constitution.
 
-**Version**: 1.2.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-07
+**Version**: 1.3.0 | **Ratified**: 2026-07-06 | **Last Amended**: 2026-07-08
