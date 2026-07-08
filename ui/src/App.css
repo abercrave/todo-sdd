@@ -187,8 +187,35 @@
   color: var(--text-h);
 }
 
+.todo-item-done {
+  opacity: 0.6;
+}
+
 .todo-item-done .todo-title {
   text-decoration: line-through;
+  color: var(--text);
+}
+
+/* Completed section */
+
+.todo-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.completed-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.completed-heading {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--text);
 }
 

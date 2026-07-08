@@ -64,14 +64,14 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Vitest test in `ui/src/utilities/todoGrouping.test.ts` for `groupByCompletion`: splits active/completed correctly; empty completed input yields an empty completed group
+- [X] T010 [P] [US1] Vitest test in `ui/src/utilities/todoGrouping.test.ts` for `groupByCompletion`: splits active/completed correctly; empty completed input yields an empty completed group
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Create `ui/src/utilities/todoGrouping.ts` exporting `groupByCompletion(todos): { active: Todo[]; completed: Todo[] }`
-- [ ] T012 [US1] Update `ui/src/components/TodoList.tsx` to render the active section and a conditionally-rendered "Completed" section using `groupByCompletion` (FR-001), hiding the Completed section entirely when it has zero items (FR-004)
-- [ ] T013 [US1] Add grayed-out styling for completed-section items in `ui/src/App.css`, visually distinct from active items (FR-002)
-- [ ] T014 [US1] Update `ui/src/components/TodoList.test.tsx` to verify: a mixed list renders active items above and grayed-out completed items in a separate section below (FR-001, FR-002); toggling a todo's completion moves it between sections without a page reload (FR-003); a list with zero completed todos shows no Completed section (FR-004)
+- [X] T011 [P] [US1] Create `ui/src/utilities/todoGrouping.ts` exporting `groupByCompletion(todos): { active: Todo[]; completed: Todo[] }`
+- [X] T012 [US1] Update `ui/src/components/TodoList.tsx` to render the active section and a conditionally-rendered "Completed" section using `groupByCompletion` (FR-001), hiding the Completed section entirely when it has zero items (FR-004)
+- [X] T013 [US1] Add grayed-out styling for completed-section items in `ui/src/App.css`, visually distinct from active items (FR-002)
+- [X] T014 [US1] Update `ui/src/components/TodoList.test.tsx` to verify: a mixed list renders active items above and grayed-out completed items in a separate section below (FR-001, FR-002); toggling a todo's completion moves it between sections without a page reload (FR-003); a list with zero completed todos shows no Completed section (FR-004)
 
 **Checkpoint**: User Story 1 is fully functional and testable independently — this is the MVP.
 

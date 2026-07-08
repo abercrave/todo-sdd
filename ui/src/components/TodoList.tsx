@@ -1,5 +1,6 @@
 import type { Todo, UpdateTodoInput } from 'shared'
 import { TodoItem } from './TodoItem'
+import { groupByCompletion } from '../utilities/todoGrouping'
 
 export interface TodoListProps {
   todos: Todo[]
@@ -13,17 +14,38 @@ export function TodoList({ todos, onToggle, onUpdate, onRemove }: TodoListProps)
     return <p className="empty-state">No todos yet. Add one above to get started.</p>
   }
 
+  const { active, completed } = groupByCompletion(todos)
+
   return (
-    <ul className="todo-list">
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          onToggle={onToggle}
-          onUpdate={onUpdate}
-          onRemove={onRemove}
-        />
-      ))}
-    </ul>
+    <div className="todo-sections">
+      <ul className="todo-list">
+        {active.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onToggle={onToggle}
+            onUpdate={onUpdate}
+            onRemove={onRemove}
+          />
+        ))}
+      </ul>
+
+      {completed.length > 0 && (
+        <section className="completed-section">
+          <h2 className="completed-heading">Completed</h2>
+          <ul className="todo-list">
+            {completed.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={onToggle}
+                onUpdate={onUpdate}
+                onRemove={onRemove}
+              />
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   )
 }
