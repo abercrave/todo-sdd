@@ -196,6 +196,12 @@
   color: var(--text);
 }
 
+.todo-item-overdue {
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+  border-left: 4px solid var(--warning);
+}
+
 /* Completed section */
 
 .todo-sections {

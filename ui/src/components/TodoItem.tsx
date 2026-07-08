@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import type { CreateTodoInput, Todo, UpdateTodoInput } from 'shared'
 import { TodoForm } from './TodoForm'
+import { isOverdue } from '../utilities/todoOverdue'
 
 export interface TodoItemProps {
   todo: Todo
@@ -63,8 +64,15 @@ export function TodoItem({ todo, onToggle, onUpdate, onRemove }: TodoItemProps) 
     )
   }
 
+  const overdue = isOverdue(todo, new Date())
+  const itemClassName = todo.isCompleted
+    ? 'todo-item todo-item-done'
+    : overdue
+      ? 'todo-item todo-item-overdue'
+      : 'todo-item'
+
   return (
-    <li className={todo.isCompleted ? 'todo-item todo-item-done' : 'todo-item'}>
+    <li className={itemClassName}>
       <label className="todo-checkbox">
         <Checkbox.Root
           className="todo-checkbox-control"

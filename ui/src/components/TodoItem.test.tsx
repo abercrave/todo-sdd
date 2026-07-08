@@ -77,4 +77,38 @@ describe('TodoItem', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/network error/i)
     expect(screen.getByText('Buy groceries')).toBeInTheDocument()
   })
+
+  it('marks an incomplete todo with a past due date as overdue', () => {
+    const todo: Todo = { ...baseTodo, dueAt: new Date('2020-01-01T00:00:00.000Z') }
+    render(<TodoItem todo={todo} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
+
+    expect(screen.getByRole('listitem').className).toContain('todo-item-overdue')
+  })
+
+  it('does not mark an incomplete todo with a future due date as overdue', () => {
+    const todo: Todo = { ...baseTodo, dueAt: new Date('2099-01-01T00:00:00.000Z') }
+    render(<TodoItem todo={todo} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
+
+    expect(screen.getByRole('listitem').className).not.toContain('todo-item-overdue')
+  })
+
+  it('does not mark an incomplete todo with no due date as overdue', () => {
+    const todo: Todo = { ...baseTodo, dueAt: null }
+    render(<TodoItem todo={todo} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
+
+    expect(screen.getByRole('listitem').className).not.toContain('todo-item-overdue')
+  })
+
+  it('does not mark a completed todo as overdue, even with a past due date', () => {
+    const todo: Todo = {
+      ...baseTodo,
+      isCompleted: true,
+      dueAt: new Date('2020-01-01T00:00:00.000Z'),
+    }
+    render(<TodoItem todo={todo} onToggle={vi.fn()} onUpdate={vi.fn()} onRemove={vi.fn()} />)
+
+    const listItem = screen.getByRole('listitem')
+    expect(listItem.className).not.toContain('todo-item-overdue')
+    expect(listItem.className).toContain('todo-item-done')
+  })
 })

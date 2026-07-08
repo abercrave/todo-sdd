@@ -108,14 +108,14 @@ Web app per plan.md: `api/src/`, `ui/src/`, `shared/src/` (existing `api`/`ui`/`
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Vitest test in `ui/src/utilities/todoOverdue.test.ts` covering: past due + incomplete → overdue; future due date → not overdue; no due date → not overdue; past due + completed → not overdue
+- [X] T022 [P] [US3] Vitest test in `ui/src/utilities/todoOverdue.test.ts` covering: past due + incomplete → overdue; future due date → not overdue; no due date → not overdue; past due + completed → not overdue
 
 ### Implementation for User Story 3
 
-- [ ] T023 [P] [US3] Create `ui/src/utilities/todoOverdue.ts` exporting `isOverdue(todo, now: Date): boolean` — `true` only when incomplete, has a due date, and that due date is strictly before `now` (FR-008, FR-010)
-- [ ] T024 [US3] Update `ui/src/components/TodoItem.tsx` to apply an overdue-highlight class using `isOverdue`, visually distinct from both normal active items and grayed-out completed items (FR-008, FR-009), re-evaluated whenever completion status or due date changes (FR-011)
-- [ ] T025 [US3] Add overdue-highlight styling in `ui/src/App.css`, distinct from both the default and grayed-out treatments
-- [ ] T026 [US3] Update `ui/src/components/TodoItem.test.tsx` to verify the overdue highlight appears only for incomplete todos with a past due date and disappears immediately when the todo is marked complete
+- [X] T023 [P] [US3] Create `ui/src/utilities/todoOverdue.ts` exporting `isOverdue(todo, now: Date): boolean` — `true` only when incomplete, has a due date, and that due date is strictly before `now` (FR-008, FR-010)
+- [X] T024 [US3] Update `ui/src/components/TodoItem.tsx` to apply an overdue-highlight class using `isOverdue`, visually distinct from both normal active items and grayed-out completed items (FR-008, FR-009), re-evaluated whenever completion status or due date changes (FR-011)
+- [X] T025 [US3] Add overdue-highlight styling in `ui/src/App.css`, distinct from both the default and grayed-out treatments
+- [X] T026 [US3] Update `ui/src/components/TodoItem.test.tsx` to verify the overdue highlight appears only for incomplete todos with a past due date and disappears immediately when the todo is marked complete
 
 **Checkpoint**: User Stories 1–3 all work independently.
 
