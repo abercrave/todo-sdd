@@ -4,7 +4,7 @@ import { readErrorMessage } from './apiError'
 
 const API_BASE = '/todos'
 
-export { isZodError, toErrorMessage } from './apiError'
+export { toErrorMessage } from './apiError'
 
 export async function listTodos(): Promise<Todo[]> {
   const response = await fetch(API_BASE)

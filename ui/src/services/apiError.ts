@@ -1,4 +1,4 @@
-export function isZodError(err: unknown): boolean {
+function isZodError(err: unknown): boolean {
   return (
     typeof err === 'object' &&
     err !== null &&
