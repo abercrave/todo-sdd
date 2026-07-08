@@ -120,6 +120,98 @@
   border-color: var(--danger);
 }
 
+/* Sort control */
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sort-control-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.sort-control-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.sort-control-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.sort-control-icon {
+  color: var(--text);
+  font-size: 11px;
+}
+
+.sort-control-content {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+.sort-control-viewport {
+  padding: 4px;
+}
+
+.sort-control-item {
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-h);
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-control-item[data-highlighted] {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.sort-control-direction {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.sort-control-direction:hover {
+  border-color: var(--text);
+}
+
+.sort-control-direction:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.sort-control-direction[aria-pressed='true'] {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
 /* Todo list */
 
 .todo-list {
@@ -176,7 +268,7 @@
 
 .todo-checkbox-indicator {
   display: flex;
-  color: var(--accent-bg);
+  color: var(--bg);
   font-size: 12px;
   line-height: 1;
 }
